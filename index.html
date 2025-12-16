@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>經典貪食蛇遊戲</title>
+    <title>經典貪食蛇遊戲 (增益版)</title>
     <style>
         body {
             display: flex;
@@ -15,6 +15,7 @@
             background-color: #2c3e50; /* 深藍色背景 */
             font-family: 'Arial', sans-serif;
             color: white;
+            overflow: hidden; /* 防止滾動條 */
         }
 
         h1 {
@@ -23,108 +24,295 @@
         }
 
         #gameCanvas {
-            border: 5px solid #bdc3c7; /* 淺灰色邊框 */
-            background-color: #34495e; /* 遊戲背景 */
+            border: 5px solid #bdc3c7;
+            background-color: #34495e;
         }
 
         #scoreBoard {
             margin-top: 15px;
             font-size: 1.5em;
-            color: #f1c40f; /* 黃色分數 */
+            color: #f1c40f;
+            min-height: 1.5em;
         }
-
+        
         #message {
             margin-top: 20px;
             font-size: 1.2em;
             color: #e74c3c;
+            display: none;
+        }
+
+        /* 遊戲訊息與增益狀態 */
+        #gameStatus {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #95a5a6;
+            min-height: 1em;
+        }
+
+        /* --- 彈出對話框樣式 --- */
+        #dialogBox {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #3498db; /* 藍色背景 */
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            text-align: center;
             display: none; /* 預設隱藏 */
+            max-width: 80%;
+            animation: fadeIn 0.3s;
+        }
+
+        #dialogTimer {
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <h1>貪食蛇大作戰</h1>
+    <h1>貪食蛇大作戰 (增益版)</h1>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     <div id="scoreBoard">分數：0</div>
+    <div id="gameStatus"></div>
     <div id="message">遊戲結束！按 R 重新開始。</div>
 
+    <div id="dialogBox">
+        <h2 id="dialogTitle">增益效果啟動！</h2>
+        <p id="dialogEffect"></p>
+        <p id="dialogTimer"></p>
+    </div>
+
     <script>
-        // 遊戲設定
+        // --- HTML 元素 ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreBoard = document.getElementById('scoreBoard');
+        const gameStatus = document.getElementById('gameStatus');
         const message = document.getElementById('message');
+        const dialogBox = document.getElementById('dialogBox');
 
-        const gridSize = 20; // 網格大小 (20x20 像素)
-        const tileCount = canvas.width / gridSize; // 網格數量 (400/20 = 20 格)
+        // --- 遊戲設定 ---
+        const gridSize = 20; 
+        const tileCount = canvas.width / gridSize;
+        const initialSpeed = 120; // 基本速度 (越小越快)
+        
+        // --- 增益技能時長 (以遊戲幀數/Tick計算) ---
+        const INVINCIBLE_DURATION = 50; // 約 6 秒
+        const MULTIPLIER_DURATION = 40; // 約 4.8 秒
+        const SLOWDOWN_DURATION = 35;  // 約 4.2 秒
+
+        // --- 遊戲狀態 ---
         let snake = [];
-        let apple = {};
-        let xVelocity = 1; // 初始向右移動
+        let xVelocity = 1; 
         let yVelocity = 0;
         let score = 0;
+        let gameSpeed = initialSpeed;
         let gameLoopInterval;
-        let speed = 150; // 遊戲速度 (毫秒)
 
-        // 初始化遊戲
+        // --- 遊戲物品狀態 ---
+        let redApple = {};
+        let goldenApple = {};
+        let shieldPotion = {};
+        let scoreStar = {};
+        let mushroom = {};
+
+        // --- 增益狀態與計時器 ---
+        let isInvincible = false;
+        let scoreMultiplier = 1;
+
+        let invincibleTimer = 0;
+        let multiplierTimer = 0;
+        let slowdownTimer = 0;
+
+        // --- 核心遊戲函數 ---
+
         function resetGame() {
-            snake = [{x: 10, y: 10}]; // 初始蛇頭在中央
-            apple = createApple();
+            snake = [{x: 10, y: 10}]; 
             xVelocity = 1;
             yVelocity = 0;
             score = 0;
+            gameSpeed = initialSpeed;
+            isInvincible = false;
+            scoreMultiplier = 1;
+            invincibleTimer = 0;
+            multiplierTimer = 0;
+            slowdownTimer = 0;
+
+            redApple = createItem('redApple');
+            goldenApple = createItem('goldenApple', 0.1); 
+            shieldPotion = createItem('shieldPotion', 0.1);
+            scoreStar = createItem('scoreStar', 0.1);
+            mushroom = createItem('mushroom', 0.15); 
+            
             scoreBoard.textContent = '分數：0';
+            gameStatus.textContent = '';
             message.style.display = 'none';
-            clearInterval(gameLoopInterval); // 清除舊的循環
-            gameLoopInterval = setInterval(gameLoop, speed);
+            dialogBox.style.display = 'none';
+            
+            clearInterval(gameLoopInterval);
+            gameLoopInterval = setInterval(gameLoop, gameSpeed);
         }
-
-        // 隨機生成食物位置
-        function createApple() {
-            let newApple;
+        
+        // 生成遊戲物品
+        function createItem(type, probability = 1) {
+            if (Math.random() > probability) {
+                return null;
+            }
+            let newItem;
+            let maxAttempts = 100;
+            let attempts = 0;
             do {
-                newApple = {
+                newItem = {
                     x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount)
+                    y: Math.floor(Math.random() * tileCount),
+                    type: type
                 };
-            } while (isOccupied(newApple)); // 確保食物不會出現在蛇身上
-            return newApple;
+                attempts++;
+            } while ((isOccupied(newItem) || isItemOverlapping(newItem)) && attempts < maxAttempts);
+
+            return attempts < maxAttempts ? newItem : null;
         }
 
-        // 檢查座標是否被蛇佔用
+        // 檢查座標是否被佔用
         function isOccupied(pos) {
             return snake.some(segment => segment.x === pos.x && segment.y === pos.y);
         }
+        function isItemOverlapping(pos) {
+            const items = [redApple, goldenApple, shieldPotion, scoreStar, mushroom].filter(i => i);
+            return items.some(item => item && item.x === pos.x && item.y === pos.y);
+        }
 
-        // 遊戲邏輯主循環
+        // 更新遊戲速度
+        function updateSpeed(newSpeed) {
+            if (newSpeed !== gameSpeed) {
+                gameSpeed = newSpeed;
+                clearInterval(gameLoopInterval);
+                gameLoopInterval = setInterval(gameLoop, gameSpeed);
+            }
+        }
+        
+        // 彈出增益效果對話框
+        function showPowerUpDialog(title, effect, durationTicks) {
+            // 計算持續秒數 (向上取整)
+            const durationSeconds = Math.ceil(durationTicks * initialSpeed / 1000); 
+
+            document.getElementById('dialogTitle').textContent = title;
+            document.getElementById('dialogEffect').textContent = effect;
+            document.getElementById('dialogTimer').textContent = `持續 ${durationSeconds} 秒`;
+            
+            dialogBox.style.display = 'block';
+
+            // 2 秒後自動隱藏對話框
+            setTimeout(() => {
+                dialogBox.style.display = 'none';
+            }, 2000); 
+        }
+        
+        // 檢查並應用增益效果
+        function checkPowerUp(head) {
+            // 1. 林晉佑舌吻之盾 (Invincibility)
+            if (shieldPotion && head.x === shieldPotion.x && head.y === shieldPotion.y) {
+                isInvincible = true;
+                invincibleTimer = INVINCIBLE_DURATION;
+                shieldPotion = createItem('shieldPotion', 0.1);
+                showPowerUpDialog("🛡️ 無敵護盾啟動", "暫時無視碰撞！", INVINCIBLE_DURATION);
+                return true;
+            } 
+            // 2. 林德懷幫天竺鼠打飛機 (Score Multiplier)
+            else if (scoreStar && head.x === scoreStar.x && head.y === scoreStar.y) {
+                scoreMultiplier = 2;
+                multiplierTimer = MULTIPLIER_DURATION;
+                scoreStar = createItem('scoreStar', 0.1);
+                showPowerUpDialog("⭐ 分數加倍", "所有得分 X 2！", MULTIPLIER_DURATION);
+                return true;
+            } 
+            // 3. 許品謙黑人力量 (Slowdown)
+            else if (mushroom && head.x === mushroom.x && head.y === mushroom.y) {
+                updateSpeed(250); // 慢速 (250ms)
+                slowdownTimer = SLOWDOWN_DURATION;
+                mushroom = createItem('mushroom', 0.15); 
+                showPowerUpDialog("🟣 慢速增益", "速度減慢，更容易操作。", SLOWDOWN_DURATION);
+                return true;
+            }
+            return false;
+        }
+
         function gameLoop() {
-            // 1. 移動蛇
+            // --- 1. 處理計時器與狀態重置 ---
+            let statusText = '';
+            
+            if (invincibleTimer > 0) {
+                invincibleTimer--;
+                if (invincibleTimer === 0) { isInvincible = false; }
+                else { statusText += `🛡️ 無敵 (${Math.ceil(invincibleTimer * gameSpeed / 1000)}s) `; }
+            }
+
+            if (multiplierTimer > 0) {
+                multiplierTimer--;
+                if (multiplierTimer === 0) { scoreMultiplier = 1; }
+                else { statusText += `⭐ 分數 X${scoreMultiplier} (${Math.ceil(multiplierTimer * gameSpeed / 1000)}s) `; }
+            }
+            
+            if (slowdownTimer > 0) {
+                slowdownTimer--;
+                if (slowdownTimer === 0) { updateSpeed(initialSpeed); }
+                else { statusText += `🟣 慢速中 (${Math.ceil(slowdownTimer * gameSpeed / 1000)}s) `; }
+            }
+            gameStatus.textContent = statusText;
+
+
+            // --- 2. 移動蛇 ---
             const head = {x: snake[0].x + xVelocity, y: snake[0].y + yVelocity};
             
-            // 2. 檢查遊戲結束條件 (撞牆或撞到自己)
-            if (head.x < 0 || head.x >= tileCount || 
-                head.y < 0 || head.y >= tileCount || 
-                isOccupied(head)) {
-                gameOver();
-                return;
+            // --- 3. 檢查碰撞 ---
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount || isOccupied(head)) {
+                if (!isInvincible) {
+                    gameOver();
+                    return;
+                }
             }
 
-            // 3. 將新頭部加入蛇身
+            // --- 4. 將新頭部加入蛇身 ---
             snake.unshift(head);
+            let ate = false;
 
-            // 4. 檢查是否吃到蘋果
-            if (head.x === apple.x && head.y === apple.y) {
-                score++;
-                scoreBoard.textContent = `分數：${score}`;
-                apple = createApple(); // 生成新蘋果
-                // 提高遊戲速度 (可選)
-                // speed = Math.max(80, speed - 5);
-                // clearInterval(gameLoopInterval);
-                // gameLoopInterval = setInterval(gameLoop, speed);
-            } else {
-                snake.pop(); // 沒吃到蘋果，移除蛇尾
+            // --- 5. 檢查吃到增益物品 ---
+            ate = checkPowerUp(head);
+
+
+            // --- 6. 檢查吃到蘋果 ---
+            if (!ate) { // 增益物品不影響長度，所以檢查是否是蘋果
+                if (redApple && head.x === redApple.x && head.y === redApple.y) {
+                    score += 1 * scoreMultiplier;
+                    redApple = createItem('redApple');
+                    ate = true;
+                } else if (goldenApple && head.x === goldenApple.x && head.y === goldenApple.y) {
+                    score += 5 * scoreMultiplier;
+                    goldenApple = createItem('goldenApple', 0.1); 
+                    ate = true;
+                }
             }
+            
+            // --- 7. 更新長度與分數 ---
+            scoreBoard.textContent = `分數：${score}`;
 
-            // 5. 繪製畫面
+            if (!ate) {
+                snake.pop(); 
+            }
+            
+            // --- 8. 繪製畫面 ---
             draw();
         }
 
@@ -135,57 +323,66 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // 繪製蛇
-            ctx.fillStyle = '#2ecc71'; // 綠色蛇身
+            ctx.fillStyle = '#2ecc71'; 
             snake.forEach(segment => {
                 ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 1, gridSize - 1);
             });
             
-            // 繪製蘋果
-            ctx.fillStyle = '#e74c3c'; // 紅色蘋果
-            ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize - 1, gridSize - 1);
+            // 繪製蛇頭 - 無敵時變色
+            if (isInvincible) {
+                ctx.fillStyle = '#f39c12'; // 橙色/金色頭部
+                ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 1, gridSize - 1);
+            }
+
+            // 繪製物品
+            // 🟥 紅蘋果 (紅色)
+            if (redApple) {
+                ctx.fillStyle = '#e74c3c'; 
+                ctx.fillRect(redApple.x * gridSize, redApple.y * gridSize, gridSize - 1, gridSize - 1);
+            }
+            // 🟡 黃金蘋果 (金色)
+            if (goldenApple) {
+                ctx.fillStyle = '#ffd700'; 
+                ctx.fillRect(goldenApple.x * gridSize, goldenApple.y * gridSize, gridSize - 1, gridSize - 1);
+            }
+            // 🟣 許品謙黑人力量 (紫色)
+            if (mushroom) {
+                ctx.fillStyle = '#9b59b6'; 
+                ctx.fillRect(mushroom.x * gridSize, mushroom.y * gridSize, gridSize - 1, gridSize - 1);
+            }
+            // 🛡️ 林晉佑舌吻之盾 (藍色/青色)
+            if (shieldPotion) {
+                ctx.fillStyle = '#1abc9c';
+                ctx.fillRect(shieldPotion.x * gridSize, shieldPotion.y * gridSize, gridSize - 1, gridSize - 1);
+            }
+            // ⭐ 林德懷幫天竺鼠打飛機 (白色/黃色)
+            if (scoreStar) {
+                ctx.fillStyle = '#ecf0f1';
+                ctx.fillRect(scoreStar.x * gridSize, scoreStar.y * gridSize, gridSize - 1, gridSize - 1);
+            }
         }
 
         // 處理鍵盤輸入
         document.addEventListener('keydown', function(event) {
             switch(event.key) {
-                case 'ArrowUp':
-                case 'w':
-                    if (yVelocity !== 1) { // 避免反向移動
-                        xVelocity = 0;
-                        yVelocity = -1;
-                    }
+                case 'ArrowUp': case 'w':
+                    if (yVelocity !== 1) { xVelocity = 0; yVelocity = -1; }
                     break;
-                case 'ArrowDown':
-                case 's':
-                    if (yVelocity !== -1) {
-                        xVelocity = 0;
-                        yVelocity = 1;
-                    }
+                case 'ArrowDown': case 's':
+                    if (yVelocity !== -1) { xVelocity = 0; yVelocity = 1; }
                     break;
-                case 'ArrowLeft':
-                case 'a':
-                    if (xVelocity !== 1) {
-                        xVelocity = -1;
-                        yVelocity = 0;
-                    }
+                case 'ArrowLeft': case 'a':
+                    if (xVelocity !== 1) { xVelocity = -1; yVelocity = 0; }
                     break;
-                case 'ArrowRight':
-                case 'd':
-                    if (xVelocity !== -1) {
-                        xVelocity = 1;
-                        yVelocity = 0;
-                    }
+                case 'ArrowRight': case 'd':
+                    if (xVelocity !== -1) { xVelocity = 1; yVelocity = 0; }
                     break;
-                case 'r':
-                case 'R':
-                    if (message.style.display === 'block') {
-                        resetGame();
-                    }
+                case 'r': case 'R':
+                    if (message.style.display === 'block') { resetGame(); }
                     break;
             }
         });
 
-        // 遊戲結束
         function gameOver() {
             clearInterval(gameLoopInterval);
             message.textContent = `遊戲結束！最終得分: ${score}。按 R 重新開始。`;
