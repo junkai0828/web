@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>經典貪食蛇遊戲 (保證增益版)</title>
+    <title>經典貪食蛇遊戲 (手機觸控支援)</title>
     <style>
         body {
             display: flex;
@@ -16,6 +16,8 @@
             font-family: 'Arial', sans-serif;
             color: white;
             overflow: hidden;
+            /* 讓手機瀏覽器保持在單一畫面，避免捲動 */
+            touch-action: manipulation; 
         }
 
         h1 {
@@ -42,7 +44,6 @@
             display: none;
         }
 
-        /* 遊戲訊息與增益狀態 */
         #gameStatus {
             margin-top: 10px;
             font-size: 1em;
@@ -50,7 +51,7 @@
             min-height: 1em;
         }
 
-        /* --- 彈出對話框樣式 --- */
+        /* --- 彈出對話框樣式 (不變) --- */
         #dialogBox {
             position: fixed;
             top: 50%;
@@ -68,16 +69,41 @@
             animation: fadeIn 0.3s;
         }
 
-        #dialogTimer {
-            font-weight: bold;
-            font-size: 1.5em;
-            margin-top: 10px;
+        /* --- 虛擬按鍵控制區樣式 --- */
+        #control-panel {
+            display: grid;
+            grid-template-areas: 
+                ". up ."
+                "left . right"
+                ". down .";
+            width: 150px; /* 控制整個 D-Pad 區域寬度 */
+            height: 150px; /* 控制整個 D-Pad 區域高度 */
+            margin-top: 30px;
+            user-select: none; /* 防止手機選取文字 */
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .dpad-button {
+            background-color: #3498db; /* 藍色按鈕 */
+            color: white;
+            border: 2px solid #2980b9;
+            border-radius: 5px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.1s;
+            padding: 10px;
         }
+        
+        .dpad-button:active {
+            background-color: #1a6096; /* 按下時變深 */
+        }
+
+        #up-btn { grid-area: up; }
+        #down-btn { grid-area: down; }
+        #left-btn { grid-area: left; }
+        #right-btn { grid-area: right; }
     </style>
 </head>
 <body>
@@ -87,6 +113,13 @@
     <div id="scoreBoard">分數：0</div>
     <div id="gameStatus"></div>
     <div id="message">遊戲結束！按 R 重新開始。</div>
+
+    <div id="control-panel">
+        <div id="up-btn" class="dpad-button">上</div>
+        <div id="left-btn" class="dpad-button">左</div>
+        <div id="right-btn" class="dpad-button">右</div>
+        <div id="down-btn" class="dpad-button">下</div>
+    </div>
 
     <div id="dialogBox">
         <h2 id="dialogTitle">增益效果啟動！</h2>
@@ -102,6 +135,13 @@
         const gameStatus = document.getElementById('gameStatus');
         const message = document.getElementById('message');
         const dialogBox = document.getElementById('dialogBox');
+        
+        // 新增按鈕元素
+        const upBtn = document.getElementById('up-btn');
+        const downBtn = document.getElementById('down-btn');
+        const leftBtn = document.getElementById('left-btn');
+        const rightBtn = document.getElementById('right-btn');
+
 
         // --- 遊戲設定 ---
         const gridSize = 20; 
@@ -150,7 +190,7 @@
             multiplierTimer = 0;
             slowdownTimer = 0;
 
-            // ***** 根據用戶需求，將稀有物品出現機率設為 100% *****
+            // ***** 稀有物品出現機率設為 100% *****
             const guaranteedProb = 1.0; 
 
             redApple = createItem('redApple');
@@ -220,7 +260,57 @@
                 dialogBox.style.display = 'none';
             }, 2000); 
         }
-        
+
+        // 處理移動邏輯 (整合鍵盤和按鈕輸入)
+        function changeDirection(key) {
+             switch(key) {
+                case 'ArrowUp': 
+                case 'w':
+                case 'up': // 新增按鈕指令
+                    if (yVelocity !== 1) { xVelocity = 0; yVelocity = -1; }
+                    break;
+                case 'ArrowDown': 
+                case 's':
+                case 'down': // 新增按鈕指令
+                    if (yVelocity !== -1) { xVelocity = 0; yVelocity = 1; }
+                    break;
+                case 'ArrowLeft': 
+                case 'a':
+                case 'left': // 新增按鈕指令
+                    if (xVelocity !== 1) { xVelocity = -1; yVelocity = 0; }
+                    break;
+                case 'ArrowRight': 
+                case 'd':
+                case 'right': // 新增按鈕指令
+                    if (xVelocity !== -1) { xVelocity = 1; yVelocity = 0; }
+                    break;
+                case 'r': 
+                case 'R':
+                    if (message.style.display === 'block') { resetGame(); }
+                    break;
+            }
+        }
+
+        // --- 按鈕事件監聽器 ---
+        function addTouchControl(button, direction) {
+            // 處理手機觸控
+            button.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // 防止觸控時頁面捲動
+                changeDirection(direction);
+            });
+            // 處理滑鼠點擊 (電腦上也可以用)
+            button.addEventListener('click', () => {
+                changeDirection(direction);
+            });
+        }
+
+        addTouchControl(upBtn, 'up');
+        addTouchControl(downBtn, 'down');
+        addTouchControl(leftBtn, 'left');
+        addTouchControl(rightBtn, 'right');
+        // --- 按鈕事件監聽器結束 ---
+
+
         // 檢查並應用增益效果
         function checkPowerUp(head) {
             const guaranteedProb = 1.0;
@@ -229,7 +319,7 @@
             if (shieldPotion && head.x === shieldPotion.x && head.y === shieldPotion.y) {
                 isInvincible = true;
                 invincibleTimer = INVINCIBLE_DURATION;
-                shieldPotion = createItem('shieldPotion', guaranteedProb); // 100% 機率重新生成
+                shieldPotion = createItem('shieldPotion', guaranteedProb); 
                 showPowerUpDialog("林晉佑看netflix不付錢", "🛡️ 暫時無視碰撞！", INVINCIBLE_DURATION);
                 return true;
             } 
@@ -237,7 +327,7 @@
             else if (scoreStar && head.x === scoreStar.x && head.y === scoreStar.y) {
                 scoreMultiplier = 2;
                 multiplierTimer = MULTIPLIER_DURATION;
-                scoreStar = createItem('scoreStar', guaranteedProb); // 100% 機率重新生成
+                scoreStar = createItem('scoreStar', guaranteedProb); 
                 showPowerUpDialog("林德懷數學1分", "⭐ 所有得分 X 2！", MULTIPLIER_DURATION);
                 return true;
             } 
@@ -245,7 +335,7 @@
             else if (mushroom && head.x === mushroom.x && head.y === mushroom.y) {
                 updateSpeed(250); // 慢速 (250ms)
                 slowdownTimer = SLOWDOWN_DURATION;
-                mushroom = createItem('mushroom', guaranteedProb); // 100% 機率重新生成
+                mushroom = createItem('mushroom', guaranteedProb); 
                 showPowerUpDialog("許品謙黑黑力量", "🟣 速度減慢，更容易操作。", SLOWDOWN_DURATION);
                 return true;
             }
@@ -319,7 +409,7 @@
             draw();
         }
 
-        // 繪製遊戲畫面
+        // 繪製遊戲畫面 (不變)
         function draw() {
             // 清空畫布
             ctx.fillStyle = '#34495e';
@@ -365,25 +455,9 @@
             }
         }
 
-        // 處理鍵盤輸入
+        // 處理鍵盤輸入 (使用統一的 changeDirection 函數)
         document.addEventListener('keydown', function(event) {
-            switch(event.key) {
-                case 'ArrowUp': case 'w':
-                    if (yVelocity !== 1) { xVelocity = 0; yVelocity = -1; }
-                    break;
-                case 'ArrowDown': case 's':
-                    if (yVelocity !== -1) { xVelocity = 0; yVelocity = 1; }
-                    break;
-                case 'ArrowLeft': case 'a':
-                    if (xVelocity !== 1) { xVelocity = -1; yVelocity = 0; }
-                    break;
-                case 'ArrowRight': case 'd':
-                    if (xVelocity !== -1) { xVelocity = 1; yVelocity = 0; }
-                    break;
-                case 'r': case 'R':
-                    if (message.style.display === 'block') { resetGame(); }
-                    break;
-            }
+            changeDirection(event.key);
         });
 
         function gameOver() {
