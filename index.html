@@ -1,87 +1,92 @@
-import time
-
-def start_game():
-    """遊戲的起點，設定玩家名稱並開始第一個場景。"""
-    print("歡迎來到『魔法森林的探索』！")
-    time.sleep(1)
-    player_name = input("請輸入你的探險家名字：")
-    print(f"\n你好，{player_name}。你站在一片古老而神秘的魔法森林邊緣。")
-    time.sleep(1)
-    print("你的任務是找到傳說中的『永恆之花』。")
-    forest_path(player_name)
-
-def game_over(reason):
-    """遊戲結束的函數。"""
-    print("\n--- 遊戲結束 ---")
-    print(f"探險失敗了。原因：{reason}")
-    print("感謝你的遊玩！")
-    time.sleep(1)
-
-def forest_path(player_name):
-    """第一個場景：森林小徑的選擇。"""
-    print("\n你面前有兩條小徑：一條是**向左**，被濃密的苔蘚覆蓋；另一條是**向右**，通往一條潺潺的溪流。")
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的第一個 GitHub 網頁</title>
     
-    while True:
-        choice = input("你要選擇 (左/右) 哪條路？").lower().strip()
-        if choice == '左':
-            mossy_path(player_name)
-            break
-        elif choice == '右':
-            river_path(player_name)
-            break
-        else:
-            print("無效的選擇，請輸入 '左' 或 '右'。")
-
-def mossy_path(player_name):
-    """左邊小徑場景：古老的石碑。"""
-    print("\n你選擇了左邊的小徑。四周的樹木變得更古老，你發現了一個刻有謎語的石碑。")
-    print("謎語是：「沒有生命，卻會吞噬生命；冰冷堅硬，卻能帶來溫暖。」")
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff; /* 淺藍色背景 */
+            color: #333;
+            text-align: center;
+            padding: 50px;
+            transition: background-color 0.5s;
+        }
+        
+        header h1 {
+            color: #4682b4; /* 鋼藍色標題 */
+            border-bottom: 2px solid #4682b4;
+            padding-bottom: 15px;
+        }
+        
+        #message {
+            font-size: 1.2em;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        #colorButton {
+            background-color: #ff6347; /* 番茄紅按鈕 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        
+        #colorButton:hover {
+            background-color: #e55337;
+            transform: scale(1.05);
+        }
+        
+        footer p {
+            margin-top: 50px;
+            font-size: 0.8em;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌟 歡迎來到我的 GitHub 專案 🌟</h1>
+    </header>
+    <main>
+        <p id="message">點擊下方的按鈕，看看會發生什麼事！</p>
+        <button id="colorButton">點我變色</button>
+    </main>
+    <footer>
+        <p>© 2025 簡單網頁範例</p>
+    </footer>
     
-    attempts = 3
-    while attempts > 0:
-        answer = input("你猜謎底是什麼？(你有 {} 次機會)：".format(attempts)).lower().strip()
-        if answer in ('火', '火焰', 'fire'):
-            print("石碑發出微光，露出了一條隱藏的通道。你成功了！")
-            hidden_cave(player_name)
-            return
-        else:
-            attempts -= 1
-            if attempts > 0:
-                print("答案不對。石碑的文字似乎更暗淡了。再試一次。")
-            else:
-                game_over("你無法解開謎語，石碑的魔法將你困在了原地。")
-                return
+    <script>
+        // 取得按鈕和訊息元素
+        const button = document.getElementById('colorButton');
+        const message = document.getElementById('message');
+        const body = document.body;
 
-def river_path(player_name):
-    """右邊小徑場景：小溪與橋。"""
-    print("\n你選擇了右邊的小徑，來到了一條清澈的小溪邊。一座年久失修的木橋橫跨在小溪上。")
-    
-    while True:
-        choice = input("你打算 (過橋/沿溪) 而行？").lower().strip()
-        if choice == '過橋':
-            print("你小心翼翼地走上木橋... 突然，一塊木板斷裂！你摔進了冰冷的溪水，失去了意識。")
-            game_over("木橋太舊了。")
-            return
-        elif choice == '沿溪':
-            print("你沿著小溪走了一段路，發現了一處被藤蔓遮蔽的隱蔽洞口。")
-            hidden_cave(player_name)
-            return
-        else:
-            print("無效的選擇，請輸入 '過橋' 或 '沿溪'。")
+        // 顏色列表
+        const colors = ['#f0f8ff', '#e6e6fa', '#ffe4e1', '#fffacd', '#f0fff0'];
+        let colorIndex = 0;
 
-def hidden_cave(player_name):
-    """最終場景：隱藏的洞穴與永恆之花。"""
-    print("\n你進入了潮濕的洞穴。在深處，你看到了一朵閃耀著微光的奇特花朵——這就是『永恆之花』！")
-    time.sleep(1)
-    print("但是，守護花朵的，是一隻睡著的...可愛小貓咪？")
-    time.sleep(1)
-    print("你屏住呼吸，悄悄地摘下了永恆之花。")
-    
-    print("\n--- 恭喜！ ---")
-    print(f"🎉 探險家 {player_name}，你成功找到了永恆之花，完成了你的探索！")
-    print("你的傳奇將被永遠傳頌。")
-    print("--- 遊戲勝利 ---")
-
-# 啟動遊戲
-if __name__ == "__main__":
-    start_game()
+        // 按鈕點擊事件監聽
+        button.addEventListener('click', function() {
+            // 改變背景顏色
+            colorIndex = (colorIndex + 1) % colors.length;
+            body.style.backgroundColor = colors[colorIndex];
+            
+            // 改變訊息文字
+            message.textContent = "耶！你點擊了我！現在背景是 " + colors[colorIndex];
+            
+            // 改變按鈕文字
+            button.textContent = "再點我一次！";
+        });
+    </script>
+</body>
+</html>
