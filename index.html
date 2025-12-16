@@ -3,90 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的第一個 GitHub 網頁</title>
-    
+    <title>經典貪食蛇遊戲</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f8ff; /* 淺藍色背景 */
-            color: #333;
-            text-align: center;
-            padding: 50px;
-            transition: background-color 0.5s;
-        }
-        
-        header h1 {
-            color: #4682b4; /* 鋼藍色標題 */
-            border-bottom: 2px solid #4682b4;
-            padding-bottom: 15px;
-        }
-        
-        #message {
-            font-size: 1.2em;
-            margin: 30px 0;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        #colorButton {
-            background-color: #ff6347; /* 番茄紅按鈕 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50; /* 深藍色背景 */
+            font-family: 'Arial', sans-serif;
             color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
         }
-        
-        #colorButton:hover {
-            background-color: #e55337;
-            transform: scale(1.05);
+
+        h1 {
+            color: #ecf0f1;
+            margin-bottom: 20px;
         }
-        
-        footer p {
-            margin-top: 50px;
-            font-size: 0.8em;
-            color: #aaa;
+
+        #gameCanvas {
+            border: 5px solid #bdc3c7; /* 淺灰色邊框 */
+            background-color: #34495e; /* 遊戲背景 */
+        }
+
+        #scoreBoard {
+            margin-top: 15px;
+            font-size: 1.5em;
+            color: #f1c40f; /* 黃色分數 */
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #e74c3c;
+            display: none; /* 預設隱藏 */
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>🌟 歡迎來到我的 GitHub 專案 🌟</h1>
-    </header>
-    <main>
-        <p id="message">點擊下方的按鈕，看看會發生什麼事！</p>
-        <button id="colorButton">點我變色</button>
-    </main>
-    <footer>
-        <p>© 2025 簡單網頁範例</p>
-    </footer>
-    
+
+    <h1>貪食蛇大作戰</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="scoreBoard">分數：0</div>
+    <div id="message">遊戲結束！按 R 重新開始。</div>
+
     <script>
-        // 取得按鈕和訊息元素
-        const button = document.getElementById('colorButton');
+        // 遊戲設定
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreBoard = document.getElementById('scoreBoard');
         const message = document.getElementById('message');
-        const body = document.body;
 
-        // 顏色列表
-        const colors = ['#f0f8ff', '#e6e6fa', '#ffe4e1', '#fffacd', '#f0fff0'];
-        let colorIndex = 0;
+        const gridSize = 20; // 網格大小 (20x20 像素)
+        const tileCount = canvas.width / gridSize; // 網格數量 (400/20 = 20 格)
+        let snake = [];
+        let apple = {};
+        let xVelocity = 1; // 初始向右移動
+        let yVelocity = 0;
+        let score = 0;
+        let gameLoopInterval;
+        let speed = 150; // 遊戲速度 (毫秒)
 
-        // 按鈕點擊事件監聽
-        button.addEventListener('click', function() {
-            // 改變背景顏色
-            colorIndex = (colorIndex + 1) % colors.length;
-            body.style.backgroundColor = colors[colorIndex];
+        // 初始化遊戲
+        function resetGame() {
+            snake = [{x: 10, y: 10}]; // 初始蛇頭在中央
+            apple = createApple();
+            xVelocity = 1;
+            yVelocity = 0;
+            score = 0;
+            scoreBoard.textContent = '分數：0';
+            message.style.display = 'none';
+            clearInterval(gameLoopInterval); // 清除舊的循環
+            gameLoopInterval = setInterval(gameLoop, speed);
+        }
+
+        // 隨機生成食物位置
+        function createApple() {
+            let newApple;
+            do {
+                newApple = {
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount)
+                };
+            } while (isOccupied(newApple)); // 確保食物不會出現在蛇身上
+            return newApple;
+        }
+
+        // 檢查座標是否被蛇佔用
+        function isOccupied(pos) {
+            return snake.some(segment => segment.x === pos.x && segment.y === pos.y);
+        }
+
+        // 遊戲邏輯主循環
+        function gameLoop() {
+            // 1. 移動蛇
+            const head = {x: snake[0].x + xVelocity, y: snake[0].y + yVelocity};
             
-            // 改變訊息文字
-            message.textContent = "耶！你點擊了我！現在背景是 " + colors[colorIndex];
+            // 2. 檢查遊戲結束條件 (撞牆或撞到自己)
+            if (head.x < 0 || head.x >= tileCount || 
+                head.y < 0 || head.y >= tileCount || 
+                isOccupied(head)) {
+                gameOver();
+                return;
+            }
+
+            // 3. 將新頭部加入蛇身
+            snake.unshift(head);
+
+            // 4. 檢查是否吃到蘋果
+            if (head.x === apple.x && head.y === apple.y) {
+                score++;
+                scoreBoard.textContent = `分數：${score}`;
+                apple = createApple(); // 生成新蘋果
+                // 提高遊戲速度 (可選)
+                // speed = Math.max(80, speed - 5);
+                // clearInterval(gameLoopInterval);
+                // gameLoopInterval = setInterval(gameLoop, speed);
+            } else {
+                snake.pop(); // 沒吃到蘋果，移除蛇尾
+            }
+
+            // 5. 繪製畫面
+            draw();
+        }
+
+        // 繪製遊戲畫面
+        function draw() {
+            // 清空畫布
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 繪製蛇
+            ctx.fillStyle = '#2ecc71'; // 綠色蛇身
+            snake.forEach(segment => {
+                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 1, gridSize - 1);
+            });
             
-            // 改變按鈕文字
-            button.textContent = "再點我一次！";
+            // 繪製蘋果
+            ctx.fillStyle = '#e74c3c'; // 紅色蘋果
+            ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize - 1, gridSize - 1);
+        }
+
+        // 處理鍵盤輸入
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case 'ArrowUp':
+                case 'w':
+                    if (yVelocity !== 1) { // 避免反向移動
+                        xVelocity = 0;
+                        yVelocity = -1;
+                    }
+                    break;
+                case 'ArrowDown':
+                case 's':
+                    if (yVelocity !== -1) {
+                        xVelocity = 0;
+                        yVelocity = 1;
+                    }
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                    if (xVelocity !== 1) {
+                        xVelocity = -1;
+                        yVelocity = 0;
+                    }
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                    if (xVelocity !== -1) {
+                        xVelocity = 1;
+                        yVelocity = 0;
+                    }
+                    break;
+                case 'r':
+                case 'R':
+                    if (message.style.display === 'block') {
+                        resetGame();
+                    }
+                    break;
+            }
         });
+
+        // 遊戲結束
+        function gameOver() {
+            clearInterval(gameLoopInterval);
+            message.textContent = `遊戲結束！最終得分: ${score}。按 R 重新開始。`;
+            message.style.display = 'block';
+        }
+
+        // 啟動遊戲
+        resetGame();
+
     </script>
 </body>
 </html>
