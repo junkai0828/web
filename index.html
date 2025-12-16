@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>經典貪食蛇遊戲 (自訂增益版)</title>
+    <title>經典貪食蛇遊戲 (保證增益版)</title>
     <style>
         body {
             display: flex;
@@ -150,15 +150,14 @@
             multiplierTimer = 0;
             slowdownTimer = 0;
 
-            // 調整稀有物品的出現機率
-            const highProb = 0.25; // 25% for Power-ups
-            const goldProb = 0.20; // 20% for Golden Apple
+            // ***** 根據用戶需求，將稀有物品出現機率設為 100% *****
+            const guaranteedProb = 1.0; 
 
             redApple = createItem('redApple');
-            goldenApple = createItem('goldenApple', goldProb); // 20% 機率
-            shieldPotion = createItem('shieldPotion', highProb); // 25% 機率
-            scoreStar = createItem('scoreStar', highProb); // 25% 機率
-            mushroom = createItem('mushroom', highProb); // 25% 機率
+            goldenApple = createItem('goldenApple', guaranteedProb); // 100% 機率
+            shieldPotion = createItem('shieldPotion', guaranteedProb); // 100% 機率
+            scoreStar = createItem('scoreStar', guaranteedProb); // 100% 機率
+            mushroom = createItem('mushroom', guaranteedProb); // 100% 機率
             
             scoreBoard.textContent = '分數：0';
             gameStatus.textContent = '';
@@ -224,13 +223,13 @@
         
         // 檢查並應用增益效果
         function checkPowerUp(head) {
-            // --- 自訂名稱與效果 ---
+            const guaranteedProb = 1.0;
             
             // 1. 守護藥水 -> 林晉佑看netflix不付錢 (Invincibility)
             if (shieldPotion && head.x === shieldPotion.x && head.y === shieldPotion.y) {
                 isInvincible = true;
                 invincibleTimer = INVINCIBLE_DURATION;
-                shieldPotion = createItem('shieldPotion', 0.25);
+                shieldPotion = createItem('shieldPotion', guaranteedProb); // 100% 機率重新生成
                 showPowerUpDialog("林晉佑看netflix不付錢", "🛡️ 暫時無視碰撞！", INVINCIBLE_DURATION);
                 return true;
             } 
@@ -238,7 +237,7 @@
             else if (scoreStar && head.x === scoreStar.x && head.y === scoreStar.y) {
                 scoreMultiplier = 2;
                 multiplierTimer = MULTIPLIER_DURATION;
-                scoreStar = createItem('scoreStar', 0.25);
+                scoreStar = createItem('scoreStar', guaranteedProb); // 100% 機率重新生成
                 showPowerUpDialog("林德懷數學1分", "⭐ 所有得分 X 2！", MULTIPLIER_DURATION);
                 return true;
             } 
@@ -246,7 +245,7 @@
             else if (mushroom && head.x === mushroom.x && head.y === mushroom.y) {
                 updateSpeed(250); // 慢速 (250ms)
                 slowdownTimer = SLOWDOWN_DURATION;
-                mushroom = createItem('mushroom', 0.25); 
+                mushroom = createItem('mushroom', guaranteedProb); // 100% 機率重新生成
                 showPowerUpDialog("許品謙黑黑力量", "🟣 速度減慢，更容易操作。", SLOWDOWN_DURATION);
                 return true;
             }
@@ -304,7 +303,7 @@
                     ate = true;
                 } else if (goldenApple && head.x === goldenApple.x && head.y === goldenApple.y) {
                     score += 5 * scoreMultiplier;
-                    goldenApple = createItem('goldenApple', 0.20); // 20% 機率
+                    goldenApple = createItem('goldenApple', 1.0); // 100% 機率重新生成
                     ate = true;
                 }
             }
