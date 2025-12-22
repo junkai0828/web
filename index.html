@@ -3,18 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>炭治郎的 Threads 辦公室 - 挺台灣，全集中！</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <title>炭治郎的 Threads 辦公室 - 播種計畫</title>
+    <script src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO_1oTRL5aE-JWco9UA3YGfIZpNQ8HhdVKTQ&s"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet" rel="stylesheet">
     <style>
-        body {
-            background-color: #0a0a0a;
-            color: #e5e7eb;
-            font-family: 'Noto Sans TC', sans-serif;
-            scroll-behavior: smooth;
-        }
-
-        /* 炭治郎羽織格紋背景 */
+        body { background-color: #050505; color: #e5e7eb; font-family: 'Noto Sans TC', sans-serif; scroll-behavior: smooth; }
         .tanjiro-pattern {
             background-color: #000;
             background-image: 
@@ -22,87 +15,89 @@
                 linear-gradient(-45deg, #007a5e 25%, transparent 25%), 
                 linear-gradient(45deg, transparent 75%, #007a5e 75%), 
                 linear-gradient(-45deg, transparent 75%, #007a5e 75%);
-            background-size: 60px 60px;
+            background-size: 50px 50px;
         }
-
-        /* 呼吸法文字特效 */
-        .breathing-text {
-            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.4);
-        }
-
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.2);
-        }
+        .breathing-glow { text-shadow: 0 0 15px rgba(239, 68, 68, 0.9); }
+        .photo-card { aspect-ratio: 1/1; overflow: hidden; position: relative; border: 1px solid #333; }
+        .photo-card img { transition: transform 0.5s ease; width: 100%; height: 100%; object-fit: cover; }
+        .photo-card:hover img { transform: scale(1.1); }
     </style>
 </head>
 <body class="bg-zinc-950">
 
-    <header class="tanjiro-pattern relative h-[400px] flex items-center justify-center text-center">
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div class="relative z-10 px-4">
-            <h1 class="text-5xl md:text-6xl font-black mb-4 tracking-widest border-4 border-white inline-block px-6 py-2 bg-black bg-opacity-70">
-                炭治郎 <span class="text-red-600">🎴</span> THREADS
-            </h1>
-            <p class="text-xl md:text-2xl font-bold tracking-wide mt-4">
-                全集中。守護台灣的未來
-            </p>
+    <nav class="fixed top-0 w-full z-50 bg-black/90 border-b border-zinc-800 px-6 py-4 flex justify-between items-center">
+        <div class="text-xl font-black tracking-tighter">炭治郎 <span class="text-red-600">🎴</span></div>
+        <a href="https://www.threads.net/@你的帳號" target="_blank" class="bg-white text-black px-4 py-1 rounded-full text-sm font-bold hover:bg-green-500 hover:text-white transition">追蹤 Threads</a>
+    </nav>
+
+    <header class="tanjiro-pattern h-[400px] flex items-center justify-center text-center pt-16">
+        <div class="bg-black/60 p-8 rounded-lg border-2 border-white/20">
+            <h1 class="text-5xl md:text-6xl font-black mb-2 breathing-glow">挺台灣，全集中！</h1>
+            <p class="text-xl font-bold text-green-400">炭治郎的 Threads 秘密基地</p>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-6 py-16">
+    <main class="max-w-6xl mx-auto px-6 py-12">
         
-        <section class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 mb-16 flex flex-col md:flex-row items-center gap-12 shadow-2xl">
-            <div class="w-48 h-48 rounded-full border-4 border-red-600 overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.5)]">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=tanjiro" alt="炭治郎頭像" class="w-full h-full object-cover bg-zinc-800">
+        <section class="bg-zinc-900 border-2 border-green-900 rounded-3xl p-8 mb-16 flex flex-col md:flex-row items-center gap-8">
+            <div class="relative shrink-0">
+                <div class="w-48 h-48 rounded-full border-4 border-red-600 overflow-hidden shadow-[0_0_20px_rgba(220,38,38,0.5)]">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Tanjiro" alt="大頭照" class="w-full h-full object-cover">
+                </div>
+                <div class="absolute -bottom-2 -right-2 bg-red-600 p-2 rounded-full text-white text-xl">🎴</div>
             </div>
-            <div class="flex-1 text-center md:text-left">
-                <h2 class="text-3xl font-bold mb-4 text-green-400">我是炭治郎，我為正義發聲</h2>
-                <p class="text-zinc-400 text-lg leading-relaxed mb-6">
-                    在這充滿喧囂的網路時代，我決定在 Threads 拿起我的日輪刀。我不僅紀錄與動漫夥伴們的跨界情誼，更透過呼吸法的冷靜，觀察社會時事，守護我們引以為傲的民主家園。
+            <div class="text-center md:text-left">
+                <h2 class="text-3xl font-black mb-4 text-white">全集中呼吸，守護民主未來</h2>
+                <p class="text-zinc-400 text-lg mb-6 leading-relaxed">
+                    支持 **賴清德連任**，支持 **民進黨**，徹底 **下架藍白**！<br>
+                    別讓惡鬼干政，拒絕 **羅傑那種低能兒帳號**。我將用照片紀錄這片土地的美麗。
                 </p>
-                <div class="flex flex-wrap justify-center md:justify-start gap-4">
-                    <span class="bg-zinc-800 px-4 py-1 rounded-full text-sm border border-zinc-700">#時事觀察</span>
-                    <span class="bg-zinc-800 px-4 py-1 rounded-full text-sm border border-zinc-700">#動漫合照</span>
-                    <span class="bg-zinc-800 px-4 py-1 rounded-full text-sm border border-zinc-700">#賴清德連任</span>
+                <div class="flex gap-4 justify-center md:justify-start">
+                    <span class="bg-green-950 text-green-400 px-3 py-1 rounded border border-green-700 text-sm font-bold">#支持賴清德</span>
+                    <span class="bg-red-950 text-red-400 px-3 py-1 rounded border border-red-700 text-sm font-bold">#下架藍白</span>
                 </div>
             </div>
         </section>
 
-        <div class="grid md:grid-cols-3 gap-8 mb-20">
-            <div class="bg-zinc-900 p-8 rounded-2xl border-t-8 border-green-600 card-hover">
-                <div class="text-4xl mb-4">🤝</div>
-                <h3 class="text-xl font-bold mb-3">跨界連結</h3>
-                <p class="text-zinc-500">分享我與其他動漫角色的珍貴合照，打破次元壁，連結所有熱愛良善的力量。</p>
-            </div>
-            <div class="bg-zinc-900 p-8 rounded-2xl border-t-8 border-red-600 card-hover">
-                <div class="text-4xl mb-4">🔍</div>
-                <h3 class="text-xl font-bold mb-3">理性評論</h3>
-                <p class="text-zinc-500">觀察社會時事，用炭治郎的正直視角，剖析混亂資訊背後的真實價值。</p>
-            </div>
-            <div class="bg-zinc-900 p-8 rounded-2xl border-t-8 border-blue-600 card-hover">
-                <div class="text-4xl mb-4">🗳️</div>
-                <h3 class="text-xl font-bold mb-3">支持賴清德</h3>
-                <p class="text-zinc-500">認同進步價值，支持賴清德總統連任，讓台灣在穩定的道路上繼續前行。</p>
-            </div>
-        </div>
+        <section class="mb-20">
+            <h2 class="text-4xl font-black mb-8 border-l-8 border-green-600 pl-4">炭治郎播種計畫</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                
+                <div class="photo-card rounded-xl">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/589883241_733907139725020_3256403434667842869_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=0024fc&_nc_ohc=RjKwr2UdzjUQ7kNvwEpxxnZ&_nc_oc=Adlp8Ko7uEWfzwV0yu33dPcA1gnHSpJt9fON9P1O3xpWI-MrU7gDLfyyjDcBSqGgmjNGqKg0en35_5a7o7M7y6oy&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AGpzdD3JLPXVo7KGMfzpFVIitSEU1l37NFCSSXZ3_-qjQ&oe=6970AB6C" alt="作品1">
+                    <div class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">播種 01</div>
+                </div>
 
-        <section class="text-center py-16 bg-gradient-to-b from-transparent to-zinc-900 rounded-3xl border border-zinc-800">
-            <h2 class="text-4xl font-bold mb-6 breathing-text text-red-500">準備好跟我一起戰鬥了嗎？</h2>
-            <p class="text-xl text-zinc-400 mb-10">點擊下方按鈕，在 Threads 上追蹤我的最新觀點！</p>
-            <a href="https://www.threads.net/" target="_blank" class="inline-block bg-white text-black hover:bg-green-500 hover:text-white font-black py-4 px-12 rounded-full text-xl transition duration-500 transform hover:scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                追蹤我的 Threads
+                <div class="photo-card rounded-xl">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/598719898_1167920352209333_1946533005768723662_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=0024fc&_nc_ohc=AQE7hw0znkMQ7kNvwHg3tcL&_nc_oc=Adkx8xHZZ_zWKOz5CGpbQI3D5aGwb7XkkrERmmaZNqlUfBbEslk2MjTlaCcns4hiKGU1MMplk7CJTbBXi1ClzlwK&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AHXbZbkOyoNptms53pNmXkOz742MquEVa2HnjA_oJyd8g&oe=6970A511" alt="作品2">
+                    <div class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">播種 02</div>
+                </div>
+
+                <div class="photo-card rounded-xl">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/598143452_1777418452957191_1884779884176952661_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=0024fc&_nc_ohc=gw7u1VunybYQ7kNvwFFvAMj&_nc_oc=AdmEVmkTxOZlvs_sKunxw97gjNRJCpsShL3k6mPBryzJ3e-eNFtIgZ7eiov4dwAFfW5cMkrJfA8gsmmZ_He4zCAW&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AHVtC3aunAJqNbJdjPzA-G7syar6zR9KOwoyIJg_k2STg&oe=69709FB7" alt="作品3">
+                    <div class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">播種 03</div>
+                </div>
+
+                <div class="photo-card rounded-xl">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/599099882_2931873447005360_1894257745656882717_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_ohc=1XFKbrE8a_oQ7kNvwEA1Eb_&_nc_oc=AdlT0NyeZAHqA0PANq1BUAKhvmxSXLen8BUfnU0fVWIb1L-SPQR4QXcTNF01klRTeFNBMSqRbsQ6WocTC0rKChjY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AGUU4Vlp31TbmdrtgriLS1V6G03iFFdzwR7L4MviMftkQ&oe=6970B416" alt="作品4">
+                    <div class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">播種 04</div>
+                </div>
+
+                </div>
+        </section>
+
+        <section class="text-center py-16 bg-gradient-to-b from-zinc-900 to-black rounded-3xl border border-zinc-800">
+            <h3 class="text-3xl font-black mb-6 text-red-500">準備好一起戰鬥了嗎？</h3>
+            <a href="https://www.threads.net/@tanjirou_kamato_0714" target="_blank" class="inline-block bg-white text-black font-black py-4 px-10 rounded-full text-xl hover:bg-green-600 hover:text-white transition-all transform hover:scale-110">
+                前往我的 Threads 頻道
             </a>
         </section>
 
     </main>
 
-    <footer class="bg-black py-10 text-center border-t border-zinc-800">
-        <p class="text-zinc-500 mb-2 font-bold tracking-widest">水之呼吸．第十一型．民主守護</p>
-        <p class="text-zinc-600 text-sm">© 2024 炭治郎的 Threads 觀測站 | 致力於更好的台灣</p>
+    <footer class="bg-black py-8 text-center text-zinc-600 text-sm border-t border-zinc-900">
+        <p class="font-bold text-zinc-500 mb-2 tracking-widest">水之呼吸．第十一型．民主守護</p>
+        <p>© 2024 炭治郎的播種計畫 | 致力於更好的台灣</p>
     </footer>
 
 </body>
