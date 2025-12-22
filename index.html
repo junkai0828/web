@@ -36,7 +36,7 @@
 
         /* 大頭照外框特效 */
         .avatar-frame {
-            border: 6px solid #b91c1c; /* 鮮紅色 */
+            border: 6px solid #b91c1c; 
             box-shadow: 0 0 20px rgba(185, 28, 28, 0.6);
             position: relative;
         }
@@ -47,6 +47,17 @@
             bottom: -10px;
             right: -10px;
             font-size: 2rem;
+        }
+
+        /* 中之人專區特殊邊框 */
+        .human-frame {
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        .human-frame:hover {
+            border-color: #00a884;
+            box-shadow: 0 0 30px rgba(0, 168, 132, 0.3);
         }
 
         .photo-card:hover {
@@ -97,6 +108,24 @@
         </section>
 
         <section class="mb-32">
+            <h2 class="text-3xl font-black mb-10 section-title">炭治郎中之人照片 <span class="text-zinc-600 text-lg font-normal ml-2">次元障壁解鎖</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0">
+                <div class="human-frame rounded-2xl overflow-hidden glass-panel p-2">
+                    <div class="aspect-[3/4] rounded-xl overflow-hidden">
+                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/604686242_4188313781387047_163764356125750267_n.jpg?stp=dst-jpg_s480x480_tt6&_nc_cat=108&ccb=1-7&_nc_sid=0024fc&_nc_ohc=LzwbY7v8uFMQ7kNvwFBkfnj&_nc_oc=AdkwbNjaI-6nnpaBwFJIMXSL245VGXJ_9n7eMheKSGiy4nPMIedcu27tnOgsBrZ7gpvF2iOirN3FInr11N2ghNbF&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AFsQ--LOfu5L0Lv_WR-ZyWzyKeo0DnBxbXHB3U-qNeNXQ&oe=6970BC91" alt="中之人照片 1" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-center mt-3 text-sm font-bold text-zinc-400 tracking-widest">REALITY 01</p>
+                </div>
+                <div class="human-frame rounded-2xl overflow-hidden glass-panel p-2">
+                    <div class="aspect-[3/4] rounded-xl overflow-hidden">
+                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/600606874_902591358861267_3142634193172342002_n.jpg?stp=dst-jpg_p480x480_tt6&_nc_cat=109&ccb=1-7&_nc_sid=0024fc&_nc_ohc=dHzDTbVYkmkQ7kNvwET1qIb&_nc_oc=Adk2TS8zqqQ6Brtf7AA5ht6T_oE62y75ntSlkPKxUbZpl4wuI6aRnpr4Me1xNoz2uYJR6hpuRdbvA5bXQuOTew9W&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AFdbsNeROgr-f2BZRElhmNlITpEgofpszfewz92Vd-59A&oe=6970C872" alt="中之人照片 2" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-center mt-3 text-sm font-bold text-zinc-400 tracking-widest">REALITY 02</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-32">
             <h2 class="text-3xl font-black mb-10 section-title">炭治郎播種計畫 <span class="text-zinc-600 text-lg font-normal ml-2">作品集</span></h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -120,8 +149,7 @@
                     </div>
                     <p class="text-center font-bold text-zinc-300">播種記錄 #003</p>
                 </div>
-
-                </div>
+            </div>
         </section>
 
         <section class="glass-panel rounded-[2rem] p-12 text-center border-2 border-red-600/30">
