@@ -1,474 +1,109 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>經典貪食蛇遊戲 (手機觸控支援)</title>
+    <title>炭治郎的 Threads 辦公室 - 挺台灣，全集中！</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #2c3e50;
-            font-family: 'Arial', sans-serif;
-            color: white;
-            overflow: hidden;
-            /* 讓手機瀏覽器保持在單一畫面，避免捲動 */
-            touch-action: manipulation; 
+            background-color: #0a0a0a;
+            color: #e5e7eb;
+            font-family: 'Noto Sans TC', sans-serif;
+            scroll-behavior: smooth;
         }
 
-        h1 {
-            color: #ecf0f1;
-            margin-bottom: 20px;
+        /* 炭治郎羽織格紋背景 */
+        .tanjiro-pattern {
+            background-color: #000;
+            background-image: 
+                linear-gradient(45deg, #007a5e 25%, transparent 25%), 
+                linear-gradient(-45deg, #007a5e 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #007a5e 75%), 
+                linear-gradient(-45deg, transparent 75%, #007a5e 75%);
+            background-size: 60px 60px;
         }
 
-        #gameCanvas {
-            border: 5px solid #bdc3c7;
-            background-color: #34495e;
+        /* 呼吸法文字特效 */
+        .breathing-text {
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.4);
         }
 
-        #scoreBoard {
-            margin-top: 15px;
-            font-size: 1.5em;
-            color: #f1c40f;
-            min-height: 1.5em;
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
-        #message {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #e74c3c;
-            display: none;
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.2);
         }
-
-        #gameStatus {
-            margin-top: 10px;
-            font-size: 1em;
-            color: #95a5a6;
-            min-height: 1em;
-        }
-
-        /* --- 彈出對話框樣式 (不變) --- */
-        #dialogBox {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #3498db;
-            color: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            text-align: center;
-            display: none;
-            max-width: 80%;
-            animation: fadeIn 0.3s;
-        }
-
-        /* --- 虛擬按鍵控制區樣式 --- */
-        #control-panel {
-            display: grid;
-            grid-template-areas: 
-                ". up ."
-                "left . right"
-                ". down .";
-            width: 150px; /* 控制整個 D-Pad 區域寬度 */
-            height: 150px; /* 控制整個 D-Pad 區域高度 */
-            margin-top: 30px;
-            user-select: none; /* 防止手機選取文字 */
-        }
-
-        .dpad-button {
-            background-color: #3498db; /* 藍色按鈕 */
-            color: white;
-            border: 2px solid #2980b9;
-            border-radius: 5px;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.1s;
-            padding: 10px;
-        }
-        
-        .dpad-button:active {
-            background-color: #1a6096; /* 按下時變深 */
-        }
-
-        #up-btn { grid-area: up; }
-        #down-btn { grid-area: down; }
-        #left-btn { grid-area: left; }
-        #right-btn { grid-area: right; }
     </style>
 </head>
-<body>
+<body class="bg-zinc-950">
 
-    <h1>貪食蛇大作戰 (自訂增益版)</h1>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <div id="scoreBoard">分數：0</div>
-    <div id="gameStatus"></div>
-    <div id="message">遊戲結束！按 R 重新開始。</div>
+    <header class="tanjiro-pattern relative h-[400px] flex items-center justify-center text-center">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="relative z-10 px-4">
+            <h1 class="text-5xl md:text-6xl font-black mb-4 tracking-widest border-4 border-white inline-block px-6 py-2 bg-black bg-opacity-70">
+                炭治郎 <span class="text-red-600">🎴</span> THREADS
+            </h1>
+            <p class="text-xl md:text-2xl font-bold tracking-wide mt-4">
+                全集中。守護台灣的未來
+            </p>
+        </div>
+    </header>
 
-    <div id="control-panel">
-        <div id="up-btn" class="dpad-button">上</div>
-        <div id="left-btn" class="dpad-button">左</div>
-        <div id="right-btn" class="dpad-button">右</div>
-        <div id="down-btn" class="dpad-button">下</div>
-    </div>
-
-    <div id="dialogBox">
-        <h2 id="dialogTitle">增益效果啟動！</h2>
-        <p id="dialogEffect"></p>
-        <p id="dialogTimer"></p>
-    </div>
-
-    <script>
-        // --- HTML 元素 ---
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreBoard = document.getElementById('scoreBoard');
-        const gameStatus = document.getElementById('gameStatus');
-        const message = document.getElementById('message');
-        const dialogBox = document.getElementById('dialogBox');
+    <main class="max-w-5xl mx-auto px-6 py-16">
         
-        // 新增按鈕元素
-        const upBtn = document.getElementById('up-btn');
-        const downBtn = document.getElementById('down-btn');
-        const leftBtn = document.getElementById('left-btn');
-        const rightBtn = document.getElementById('right-btn');
+        <section class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 mb-16 flex flex-col md:flex-row items-center gap-12 shadow-2xl">
+            <div class="w-48 h-48 rounded-full border-4 border-red-600 overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.5)]">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=tanjiro" alt="炭治郎頭像" class="w-full h-full object-cover bg-zinc-800">
+            </div>
+            <div class="flex-1 text-center md:text-left">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">我是炭治郎，我為正義發聲</h2>
+                <p class="text-zinc-400 text-lg leading-relaxed mb-6">
+                    在這充滿喧囂的網路時代，我決定在 Threads 拿起我的日輪刀。我不僅紀錄與動漫夥伴們的跨界情誼，更透過呼吸法的冷靜，觀察社會時事，守護我們引以為傲的民主家園。
+                </p>
+                <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                    <span class="bg-zinc-800 px-4 py-1 rounded-full text-sm border border-zinc-700">#時事觀察</span>
+                    <span class="bg-zinc-800 px-4 py-1 rounded-full text-sm border border-zinc-700">#動漫合照</span>
+                    <span class="bg-zinc-800 px-4 py-1 rounded-full text-sm border border-zinc-700">#賴清德連任</span>
+                </div>
+            </div>
+        </section>
 
+        <div class="grid md:grid-cols-3 gap-8 mb-20">
+            <div class="bg-zinc-900 p-8 rounded-2xl border-t-8 border-green-600 card-hover">
+                <div class="text-4xl mb-4">🤝</div>
+                <h3 class="text-xl font-bold mb-3">跨界連結</h3>
+                <p class="text-zinc-500">分享我與其他動漫角色的珍貴合照，打破次元壁，連結所有熱愛良善的力量。</p>
+            </div>
+            <div class="bg-zinc-900 p-8 rounded-2xl border-t-8 border-red-600 card-hover">
+                <div class="text-4xl mb-4">🔍</div>
+                <h3 class="text-xl font-bold mb-3">理性評論</h3>
+                <p class="text-zinc-500">觀察社會時事，用炭治郎的正直視角，剖析混亂資訊背後的真實價值。</p>
+            </div>
+            <div class="bg-zinc-900 p-8 rounded-2xl border-t-8 border-blue-600 card-hover">
+                <div class="text-4xl mb-4">🗳️</div>
+                <h3 class="text-xl font-bold mb-3">支持賴清德</h3>
+                <p class="text-zinc-500">認同進步價值，支持賴清德總統連任，讓台灣在穩定的道路上繼續前行。</p>
+            </div>
+        </div>
 
-        // --- 遊戲設定 ---
-        const gridSize = 20; 
-        const tileCount = canvas.width / gridSize;
-        const initialSpeed = 120; // 基本速度 (越小越快)
-        
-        // --- 增益技能時長 (以遊戲幀數/Tick計算) ---
-        const INVINCIBLE_DURATION = 50; // 約 6 秒
-        const MULTIPLIER_DURATION = 40; // 約 4.8 秒
-        const SLOWDOWN_DURATION = 35;  // 約 4.2 秒
+        <section class="text-center py-16 bg-gradient-to-b from-transparent to-zinc-900 rounded-3xl border border-zinc-800">
+            <h2 class="text-4xl font-bold mb-6 breathing-text text-red-500">準備好跟我一起戰鬥了嗎？</h2>
+            <p class="text-xl text-zinc-400 mb-10">點擊下方按鈕，在 Threads 上追蹤我的最新觀點！</p>
+            <a href="https://www.threads.net/" target="_blank" class="inline-block bg-white text-black hover:bg-green-500 hover:text-white font-black py-4 px-12 rounded-full text-xl transition duration-500 transform hover:scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                追蹤我的 Threads
+            </a>
+        </section>
 
-        // --- 遊戲狀態 ---
-        let snake = [];
-        let xVelocity = 1; 
-        let yVelocity = 0;
-        let score = 0;
-        let gameSpeed = initialSpeed;
-        let gameLoopInterval;
+    </main>
 
-        // --- 遊戲物品狀態 ---
-        let redApple = {};
-        let goldenApple = {};
-        let shieldPotion = {};
-        let scoreStar = {};
-        let mushroom = {};
+    <footer class="bg-black py-10 text-center border-t border-zinc-800">
+        <p class="text-zinc-500 mb-2 font-bold tracking-widest">水之呼吸．第十一型．民主守護</p>
+        <p class="text-zinc-600 text-sm">© 2024 炭治郎的 Threads 觀測站 | 致力於更好的台灣</p>
+    </footer>
 
-        // --- 增益狀態與計時器 ---
-        let isInvincible = false;
-        let scoreMultiplier = 1;
-
-        let invincibleTimer = 0;
-        let multiplierTimer = 0;
-        let slowdownTimer = 0;
-
-        // --- 核心遊戲函數 ---
-
-        function resetGame() {
-            snake = [{x: 10, y: 10}]; 
-            xVelocity = 1;
-            yVelocity = 0;
-            score = 0;
-            gameSpeed = initialSpeed;
-            isInvincible = false;
-            scoreMultiplier = 1;
-            invincibleTimer = 0;
-            multiplierTimer = 0;
-            slowdownTimer = 0;
-
-            // ***** 稀有物品出現機率設為 100% *****
-            const guaranteedProb = 1.0; 
-
-            redApple = createItem('redApple');
-            goldenApple = createItem('goldenApple', guaranteedProb); // 100% 機率
-            shieldPotion = createItem('shieldPotion', guaranteedProb); // 100% 機率
-            scoreStar = createItem('scoreStar', guaranteedProb); // 100% 機率
-            mushroom = createItem('mushroom', guaranteedProb); // 100% 機率
-            
-            scoreBoard.textContent = '分數：0';
-            gameStatus.textContent = '';
-            message.style.display = 'none';
-            dialogBox.style.display = 'none';
-            
-            clearInterval(gameLoopInterval);
-            gameLoopInterval = setInterval(gameLoop, gameSpeed);
-        }
-        
-        // 生成遊戲物品
-        function createItem(type, probability = 1) {
-            if (Math.random() > probability) {
-                return null;
-            }
-            let newItem;
-            let maxAttempts = 100;
-            let attempts = 0;
-            do {
-                newItem = {
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount),
-                    type: type
-                };
-                attempts++;
-            } while ((isOccupied(newItem) || isItemOverlapping(newItem)) && attempts < maxAttempts);
-
-            return attempts < maxAttempts ? newItem : null;
-        }
-
-        // 檢查座標是否被佔用
-        function isOccupied(pos) {
-            return snake.some(segment => segment.x === pos.x && segment.y === pos.y);
-        }
-        function isItemOverlapping(pos) {
-            const items = [redApple, goldenApple, shieldPotion, scoreStar, mushroom].filter(i => i);
-            return items.some(item => item && item.x === pos.x && item.y === pos.y);
-        }
-
-        // 更新遊戲速度
-        function updateSpeed(newSpeed) {
-            if (newSpeed !== gameSpeed) {
-                gameSpeed = newSpeed;
-                clearInterval(gameLoopInterval);
-                gameLoopInterval = setInterval(gameLoop, gameSpeed);
-            }
-        }
-        
-        // 彈出增益效果對話框
-        function showPowerUpDialog(title, effect, durationTicks) {
-            const durationSeconds = Math.ceil(durationTicks * initialSpeed / 1000); 
-
-            document.getElementById('dialogTitle').textContent = title;
-            document.getElementById('dialogEffect').textContent = effect;
-            document.getElementById('dialogTimer').textContent = `持續 ${durationSeconds} 秒`;
-            
-            dialogBox.style.display = 'block';
-
-            setTimeout(() => {
-                dialogBox.style.display = 'none';
-            }, 2000); 
-        }
-
-        // 處理移動邏輯 (整合鍵盤和按鈕輸入)
-        function changeDirection(key) {
-             switch(key) {
-                case 'ArrowUp': 
-                case 'w':
-                case 'up': // 新增按鈕指令
-                    if (yVelocity !== 1) { xVelocity = 0; yVelocity = -1; }
-                    break;
-                case 'ArrowDown': 
-                case 's':
-                case 'down': // 新增按鈕指令
-                    if (yVelocity !== -1) { xVelocity = 0; yVelocity = 1; }
-                    break;
-                case 'ArrowLeft': 
-                case 'a':
-                case 'left': // 新增按鈕指令
-                    if (xVelocity !== 1) { xVelocity = -1; yVelocity = 0; }
-                    break;
-                case 'ArrowRight': 
-                case 'd':
-                case 'right': // 新增按鈕指令
-                    if (xVelocity !== -1) { xVelocity = 1; yVelocity = 0; }
-                    break;
-                case 'r': 
-                case 'R':
-                    if (message.style.display === 'block') { resetGame(); }
-                    break;
-            }
-        }
-
-        // --- 按鈕事件監聽器 ---
-        function addTouchControl(button, direction) {
-            // 處理手機觸控
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // 防止觸控時頁面捲動
-                changeDirection(direction);
-            });
-            // 處理滑鼠點擊 (電腦上也可以用)
-            button.addEventListener('click', () => {
-                changeDirection(direction);
-            });
-        }
-
-        addTouchControl(upBtn, 'up');
-        addTouchControl(downBtn, 'down');
-        addTouchControl(leftBtn, 'left');
-        addTouchControl(rightBtn, 'right');
-        // --- 按鈕事件監聽器結束 ---
-
-
-        // 檢查並應用增益效果
-        function checkPowerUp(head) {
-            const guaranteedProb = 1.0;
-            
-            // 1. 守護藥水 -> 林晉佑看netflix不付錢 (Invincibility)
-            if (shieldPotion && head.x === shieldPotion.x && head.y === shieldPotion.y) {
-                isInvincible = true;
-                invincibleTimer = INVINCIBLE_DURATION;
-                shieldPotion = createItem('shieldPotion', guaranteedProb); 
-                showPowerUpDialog("林晉佑看netflix不付錢", "🛡️ 暫時無視碰撞！", INVINCIBLE_DURATION);
-                return true;
-            } 
-            // 2. 分數之星 -> 林德懷數學1分 (Score Multiplier)
-            else if (scoreStar && head.x === scoreStar.x && head.y === scoreStar.y) {
-                scoreMultiplier = 2;
-                multiplierTimer = MULTIPLIER_DURATION;
-                scoreStar = createItem('scoreStar', guaranteedProb); 
-                showPowerUpDialog("林德懷數學1分", "⭐ 所有得分 X 2！", MULTIPLIER_DURATION);
-                return true;
-            } 
-            // 3. 增益蘑菇 -> 許品謙黑黑力量 (Slowdown)
-            else if (mushroom && head.x === mushroom.x && head.y === mushroom.y) {
-                updateSpeed(250); // 慢速 (250ms)
-                slowdownTimer = SLOWDOWN_DURATION;
-                mushroom = createItem('mushroom', guaranteedProb); 
-                showPowerUpDialog("許品謙黑黑力量", "🟣 速度減慢，更容易操作。", SLOWDOWN_DURATION);
-                return true;
-            }
-            return false;
-        }
-
-        function gameLoop() {
-            // --- 1. 處理計時器與狀態重置 ---
-            let statusText = '';
-            
-            if (invincibleTimer > 0) {
-                invincibleTimer--;
-                if (invincibleTimer === 0) { isInvincible = false; }
-                else { statusText += `🛡️ 看N不付 (${Math.ceil(invincibleTimer * gameSpeed / 1000)}s) `; }
-            }
-
-            if (multiplierTimer > 0) {
-                multiplierTimer--;
-                if (multiplierTimer === 0) { scoreMultiplier = 1; }
-                else { statusText += `⭐ 數學1分 X${scoreMultiplier} (${Math.ceil(multiplierTimer * gameSpeed / 1000)}s) `; }
-            }
-            
-            if (slowdownTimer > 0) {
-                slowdownTimer--;
-                if (slowdownTimer === 0) { updateSpeed(initialSpeed); }
-                else { statusText += `🟣 黑黑力量 (${Math.ceil(slowdownTimer * gameSpeed / 1000)}s) `; }
-            }
-            gameStatus.textContent = statusText;
-
-
-            // --- 2. 移動蛇 ---
-            const head = {x: snake[0].x + xVelocity, y: snake[0].y + yVelocity};
-            
-            // --- 3. 檢查碰撞 ---
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount || isOccupied(head)) {
-                if (!isInvincible) {
-                    gameOver();
-                    return;
-                }
-            }
-
-            // --- 4. 將新頭部加入蛇身 ---
-            snake.unshift(head);
-            let ate = false;
-
-            // --- 5. 檢查吃到增益物品 ---
-            ate = checkPowerUp(head);
-
-
-            // --- 6. 檢查吃到蘋果 ---
-            if (!ate) { 
-                if (redApple && head.x === redApple.x && head.y === redApple.y) {
-                    score += 1 * scoreMultiplier;
-                    redApple = createItem('redApple');
-                    ate = true;
-                } else if (goldenApple && head.x === goldenApple.x && head.y === goldenApple.y) {
-                    score += 5 * scoreMultiplier;
-                    goldenApple = createItem('goldenApple', 1.0); // 100% 機率重新生成
-                    ate = true;
-                }
-            }
-            
-            // --- 7. 更新長度與分數 ---
-            scoreBoard.textContent = `分數：${score}`;
-
-            if (!ate) {
-                snake.pop(); 
-            }
-            
-            // --- 8. 繪製畫面 ---
-            draw();
-        }
-
-        // 繪製遊戲畫面 (不變)
-        function draw() {
-            // 清空畫布
-            ctx.fillStyle = '#34495e';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // 繪製蛇
-            ctx.fillStyle = '#2ecc71'; 
-            snake.forEach(segment => {
-                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 1, gridSize - 1);
-            });
-            
-            // 繪製蛇頭 - 無敵時變色
-            if (isInvincible) {
-                ctx.fillStyle = '#f39c12'; // 橙色/金色頭部
-                ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 1, gridSize - 1);
-            }
-
-            // 繪製物品
-            // 🟥 紅蘋果 (紅色)
-            if (redApple) {
-                ctx.fillStyle = '#e74c3c'; 
-                ctx.fillRect(redApple.x * gridSize, redApple.y * gridSize, gridSize - 1, gridSize - 1);
-            }
-            // 🟡 黃金蘋果 (金色)
-            if (goldenApple) {
-                ctx.fillStyle = '#ffd700'; 
-                ctx.fillRect(goldenApple.x * gridSize, goldenApple.y * gridSize, gridSize - 1, gridSize - 1);
-            }
-            // 🟣 增益蘑菇 (紫色)
-            if (mushroom) {
-                ctx.fillStyle = '#9b59b6'; 
-                ctx.fillRect(mushroom.x * gridSize, mushroom.y * gridSize, gridSize - 1, gridSize - 1);
-            }
-            // 🛡️ 守護藥水 (藍色/青色)
-            if (shieldPotion) {
-                ctx.fillStyle = '#1abc9c';
-                ctx.fillRect(shieldPotion.x * gridSize, shieldPotion.y * gridSize, gridSize - 1, gridSize - 1);
-            }
-            // ⭐ 分數之星 (白色/黃色)
-            if (scoreStar) {
-                ctx.fillStyle = '#ecf0f1';
-                ctx.fillRect(scoreStar.x * gridSize, scoreStar.y * gridSize, gridSize - 1, gridSize - 1);
-            }
-        }
-
-        // 處理鍵盤輸入 (使用統一的 changeDirection 函數)
-        document.addEventListener('keydown', function(event) {
-            changeDirection(event.key);
-        });
-
-        function gameOver() {
-            clearInterval(gameLoopInterval);
-            message.textContent = `遊戲結束！最終得分: ${score}。按 R 重新開始。`;
-            message.style.display = 'block';
-        }
-
-        // 啟動遊戲
-        resetGame();
-
-    </script>
 </body>
 </html>
