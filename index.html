@@ -9,7 +9,6 @@
     <style>
         body { background-color: #0d0d0d; color: #eeeeee; font-family: 'Noto Sans TC', sans-serif; scroll-behavior: smooth; }
         
-        /* 炭治郎招牌格紋背景 */
         .tanjiro-bg {
             background-image: 
                 linear-gradient(45deg, #004d3d 25%, transparent 25%), 
@@ -26,7 +25,6 @@
         .photo-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .photo-card:hover { transform: translateY(-8px); border-color: #00ffaa; }
 
-        /* 聊天室視窗 - 修改為側邊固定且預設開啟 */
         #chat-widget { 
             position: fixed; bottom: 20px; right: 20px; width: 320px; height: 450px; 
             z-index: 100; display: flex; flex-direction: column; border-radius: 1.5rem;
@@ -35,15 +33,18 @@
         #chat-messages::-webkit-scrollbar { width: 4px; }
         #chat-messages::-webkit-scrollbar-thumb { background: #b91c1c; border-radius: 10px; }
 
-        /* 小遊戲目標 */
+        /* 小遊戲照片樣式 */
         #game-area { 
             position: relative; width: 100%; height: 350px; background: rgba(0,0,0,0.5); 
             border-radius: 2rem; overflow: hidden; border: 1px solid #333; cursor: crosshair;
         }
-        .evil-ghost {
-            position: absolute; font-size: 2.5rem; cursor: pointer; user-select: none;
+        .evil-photo {
+            position: absolute; width: 70px; height: 70px; cursor: pointer; user-select: none;
+            border: 3px solid #b91c1c; border-radius: 50%; object-fit: cover;
+            box-shadow: 0 0 15px rgba(185, 28, 28, 0.8);
             transition: transform 0.1s; z-index: 10;
         }
+        .evil-photo:active { transform: scale(0.8); }
     </style>
 </head>
 <body class="antialiased">
@@ -75,7 +76,7 @@
         </section>
 
         <section class="mb-32">
-            <h2 class="text-4xl font-black section-title">挺台灣。全集中連署牆 <span class="text-zinc-600 text-xl font-normal ml-3 tracking-widest">MESSAGE BOARD</span></h2>
+            <h2 class="text-4xl font-black section-title">挺台灣。全集中連署牆</h2>
             <div class="glass-panel p-8 rounded-[3rem]">
                 <div id="signature-list" class="space-y-4 max-h-80 overflow-y-auto mb-8 pr-4">
                     <div class="border-b border-zinc-800 pb-2">
@@ -84,48 +85,44 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" id="wall-name" placeholder="你的稱號" class="bg-zinc-900 border border-zinc-700 p-3 rounded-xl text-sm outline-none focus:border-green-500">
-                    <input type="text" id="wall-msg" placeholder="挺台灣的心聲..." class="md:col-span-2 bg-zinc-900 border border-zinc-700 p-3 rounded-xl text-sm outline-none focus:border-green-500">
-                    <button onclick="addSignature()" class="md:col-span-3 bg-green-600 hover:bg-green-500 py-3 rounded-xl font-black transition shadow-lg">發出挺台灣宣言</button>
+                    <input type="text" id="wall-name" placeholder="你的稱號" class="bg-zinc-900 border border-zinc-700 p-3 rounded-xl text-sm outline-none focus:border-green-500 text-white">
+                    <input type="text" id="wall-msg" placeholder="挺台灣的心聲..." class="md:col-span-2 bg-zinc-900 border border-zinc-700 p-3 rounded-xl text-sm outline-none focus:border-green-500 text-white">
+                    <button onclick="addSignature()" class="md:col-span-3 bg-green-600 hover:bg-green-500 py-3 rounded-xl font-black transition shadow-lg text-white">發出挺台灣宣言</button>
                 </div>
             </div>
         </section>
 
         <section class="mb-32">
-            <h2 class="text-4xl font-black section-title">下架藍白。惡鬼退散 小遊戲 <span class="text-zinc-600 text-xl font-normal ml-3 tracking-widest">GAME</span></h2>
+            <h2 class="text-4xl font-black section-title">下架惡鬼。揮刀練習</h2>
             <div id="game-area" class="flex flex-col items-center justify-center">
                 <div id="game-intro" class="text-center z-20">
-                    <p class="text-2xl font-black mb-4 text-red-500">點擊出現的惡鬼符號將其消除！</p>
-                    <button onclick="startGame()" class="bg-red-600 px-8 py-3 rounded-full font-black text-xl hover:bg-red-500 transition shadow-2xl">開始揮刀</button>
+                    <p class="text-2xl font-black mb-4 text-red-500">點擊出現的照片將其消滅！</p>
+                    <button onclick="startGame()" class="bg-red-600 px-8 py-3 rounded-full font-black text-xl hover:bg-red-500 transition shadow-2xl">開始練習</button>
                 </div>
             </div>
             <div class="mt-6 flex justify-between items-center px-4">
                 <span class="text-2xl font-black">消除數量：<span id="score" class="text-red-500">0</span></span>
-                <span id="praise-txt" class="text-green-400 font-black text-xl opacity-0 transition-opacity">太棒了！謝謝你守護台灣！</span>
+                <span id="praise-txt" class="text-green-400 font-black text-xl opacity-0 transition-opacity">太棒了！守護台灣！</span>
             </div>
         </section>
 
         <section class="mb-32">
-            <h2 class="text-4xl font-black section-title">炭治郎中之人照片 <span class="text-zinc-600 text-xl font-normal ml-3 tracking-widest">REALITY REVEAL</span></h2>
+            <h2 class="text-4xl font-black section-title">炭治郎中之人照片</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div class="photo-card glass-panel p-3 rounded-3xl overflow-hidden">
-                    <div class="aspect-[3/4] rounded-2xl overflow-hidden">
-                        <img src="https://static.styletc.com/images/cover/92/291392/md-520ec9f26a003c743e56147907ce7343.jpg" alt="中之人 1" class="w-full h-full object-cover">
-                    </div>
+                    <img src="https://static.styletc.com/images/cover/92/291392/md-520ec9f26a003c743e56147907ce7343.jpg" class="w-full h-full object-cover rounded-2xl">
                 </div>
                 <div class="photo-card glass-panel p-3 rounded-3xl overflow-hidden">
-                    <div class="aspect-[3/4] rounded-2xl overflow-hidden">
-                        <img src="https://images-tw.girlstyle.com/wp-content/uploads/2025/05/8118afde.jpg?auto=format&w=1053" alt="中之人 2" class="w-full h-full object-cover">
-                    </div>
+                    <img src="https://images-tw.girlstyle.com/wp-content/uploads/2025/05/8118afde.jpg?auto=format&w=1053" class="w-full h-full object-cover rounded-2xl">
                 </div>
             </div>
         </section>
 
         <section class="mb-32">
-            <h2 class="text-4xl font-black section-title">炭治郎播種計畫 <span class="text-zinc-600 text-xl font-normal ml-3">SEEDING PLAN</span></h2>
+            <h2 class="text-4xl font-black section-title">炭治郎播種計畫</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="photo-card glass-panel p-3 rounded-2xl shadow-2xl">
-                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/599099882_2931873447005360_1894257745656882717_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_ohc=1XFKbrE8a_oQ7kNvwEA1Eb_&_nc_oc=AdlT0NyeZAHqA0PANq1BUAKhvmxSXLen8BUfnU0fVWIb1L-SPQR4QXcTNF01klRTeFNBMSqRbsQ6WocTC0rKChjY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AGUU4Vlp31TbmdrtgriLS1V6G03iFFdzwR7L4MviMftkQ&oe=6970B416" class="rounded-xl w-full aspect-square object-cover mb-4">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/599099882_2931873447005360_1894257745656882717_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_ohc=1XFKbrE8a_oQ7kNvwEA1Eb_&_nc_oc=AdlT0NyeZAHqA0PANq1BUAKhvmxSXLen8BUfnU0fVWIb1L-SPQR4QXcTNF01klRTeFNBMSqRbsQ6WocTC0rKChjY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AHUU4Vlp31TbmdrtgriLS1V6G03iFFdzwR7L4MviMftkQ&oe=6970B416" class="rounded-xl w-full aspect-square object-cover mb-4">
                     <p class="text-center font-bold text-green-400 italic">播種記錄 #001</p>
                 </div>
                 <div class="photo-card glass-panel p-3 rounded-2xl shadow-2xl">
@@ -141,17 +138,13 @@
     </main>
 
     <div id="chat-widget" class="glass-panel">
-        <div class="bg-red-800 p-4 font-bold text-white tracking-widest text-sm rounded-t-2xl">
-            🎴 炭治郎對話室
-        </div>
+        <div class="bg-red-800 p-4 font-bold text-white text-sm rounded-t-2xl">🎴 炭治郎對話室</div>
         <div id="chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4 text-sm">
-            <div class="bg-green-900/30 p-3 rounded-2xl border border-green-500/30 italic">你好！我是竈門炭治郎。為了守護台灣與民主的正義，你有什麼想跟我聊聊的嗎？</div>
+            <div class="bg-green-900/30 p-3 rounded-2xl border border-green-500/30 italic text-white">你好！我是竈門炭治郎。為了守護台灣與民主的正義，你有什麼想跟我聊聊的嗎？</div>
         </div>
-        <div class="p-4 border-t border-zinc-700 bg-zinc-900 rounded-b-2xl">
-            <div class="flex gap-2">
-                <input type="text" id="user-input" placeholder="對話內容..." class="flex-1 bg-zinc-800 border border-zinc-700 rounded-full px-4 py-2 text-xs focus:outline-none">
-                <button onclick="sendMessage()" class="bg-red-600 px-4 py-2 rounded-full text-xs font-black">送出</button>
-            </div>
+        <div class="p-4 border-t border-zinc-700 bg-zinc-900 rounded-b-2xl flex gap-2">
+            <input type="text" id="user-input" placeholder="對話內容..." class="flex-1 bg-zinc-800 border border-zinc-700 rounded-full px-4 py-2 text-xs text-white">
+            <button onclick="sendMessage()" class="bg-red-600 px-4 py-2 rounded-full text-xs font-black text-white">送出</button>
         </div>
     </div>
 
@@ -160,21 +153,18 @@
     </footer>
 
     <script>
-        // --- 設定區 ---
+        // --- 設定與聊天 ---
         const API_KEY = 'AIzaSyCEcrHq8DB2fXr9wsUZCHB_Sb2POWI2yIk'; 
-        const systemPrompt = `你現在是《鬼滅之刃》的竈門炭治郎。立場堅定挺台灣、挺民進黨與賴清德。厭惡造謠與擾亂大眾的人（如羅傑）。說話風格溫柔但堅毅，自然融入呼吸法術語。`;
+        const systemPrompt = `你現在是竈門炭治郎。立場挺台灣、挺賴清德。語氣溫柔但堅毅。`;
 
-        // --- 聊天功能 ---
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const text = input.value.trim();
             if (!text) return;
-            appendMessage('你', text, 'bg-zinc-800/50');
+            appendMessage('你', text, 'bg-zinc-800/50 text-white');
             input.value = '';
-
             try {
-                // 使用符合 Gemini 1.5 結構的調用
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -184,67 +174,69 @@
                 });
                 const data = await response.json();
                 const reply = data.candidates[0].content.parts[0].text;
-                appendMessage('炭治郎', reply, 'bg-green-900/40 border border-green-500/30 italic');
-            } catch (error) {
-                appendMessage('系統', '呼吸紊亂...請確認 API Key。', 'bg-red-900/20');
+                appendMessage('炭治郎', reply, 'bg-green-900/40 border border-green-500/30 italic text-white');
+            } catch (e) {
+                appendMessage('系統', '呼吸紊亂...', 'bg-red-900/20 text-white');
             }
         }
 
         function appendMessage(sender, msg, bgColor) {
             const div = document.createElement('div');
-            div.className = `${bgColor} p-3 rounded-2xl text-xs leading-relaxed shadow-sm`;
+            div.className = `${bgColor} p-3 rounded-2xl text-xs leading-relaxed`;
             div.innerHTML = `<strong>${sender}:</strong> ${msg}`;
             const chatMessages = document.getElementById('chat-messages');
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // --- 連署牆功能 ---
+        // --- 連署牆 ---
         function addSignature() {
             const name = document.getElementById('wall-name').value.trim();
             const msg = document.getElementById('wall-msg').value.trim();
-            if (!name || !msg) return alert('請填寫名字與心聲，全集中！');
-            const list = document.getElementById('signature-list');
+            if (!name || !msg) return alert('請填寫完整！');
             const div = document.createElement('div');
-            div.className = "border-b border-zinc-800 pb-2 animate-pulse";
+            div.className = "border-b border-zinc-800 pb-2";
             div.innerHTML = `<span class="text-green-400 font-bold">${name}：</span><span class="text-zinc-300">${msg}</span>`;
-            list.prepend(div);
+            document.getElementById('signature-list').prepend(div);
             document.getElementById('wall-name').value = '';
             document.getElementById('wall-msg').value = '';
         }
 
-        // --- 小遊戲功能 ---
+        // --- 小遊戲 (照片連結填寫處) ---
         let score = 0;
-        const ghosts = ['👹', '👺', '💩', '🤡', '👺']; 
+        const evilPhotos = [
+            'https://yt3.googleusercontent.com/f-9wYNYuSpFJQrxIERa4YhK7tL7JB_f7RAujbU7LtMK1Dctcq_p_7dnZTE1-sXMN4uzrrtYn=s176-c-k-c0x00ffffff-no-rj-mo', // <-- 請替換成你要打的照片連結1
+            'https://s.yimg.com/ny/api/res/1.2/53MAoJQXUaOCixYl5qFF2g--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD04Nzc-/https://s.yimg.com/os/creatr-uploaded-images/2023-03/08740240-ca23-11ed-b8fe-8486d07069f5', // <-- 請替換成你要打的照片連結2
+            'https://upload.wikimedia.org/wikipedia/commons/a/a1/Emblem_of_the_Kuomintang.svg'  // <-- 請替換成你要打的照片連結3
+        ];
+
         function startGame() {
             document.getElementById('game-intro').classList.add('hidden');
             score = 0;
             document.getElementById('score').innerText = score;
-            setInterval(spawnGhost, 1000);
+            setInterval(spawnEvilPhoto, 1000);
         }
-        function spawnGhost() {
-            const ghost = document.createElement('div');
-            ghost.className = 'evil-ghost';
-            ghost.innerText = ghosts[Math.floor(Math.random() * ghosts.length)];
-            ghost.style.left = Math.random() * 90 + '%';
-            ghost.style.top = Math.random() * 80 + '%';
-            ghost.onclick = function() {
+
+        function spawnEvilPhoto() {
+            const img = document.createElement('img');
+            img.className = 'evil-photo';
+            img.src = evilPhotos[Math.floor(Math.random() * evilPhotos.length)];
+            const area = document.getElementById('game-area');
+            img.style.left = Math.random() * (area.clientWidth - 80) + 'px';
+            img.style.top = Math.random() * (area.clientHeight - 80) + 'px';
+            img.onclick = function() {
                 score++;
                 document.getElementById('score').innerText = score;
                 this.remove();
-                if (score % 5 === 0) {
-                    const txt = document.getElementById('praise-txt');
-                    txt.style.opacity = 1;
-                    setTimeout(() => txt.style.opacity = 0, 2000);
-                }
+                const praise = document.getElementById('praise-txt');
+                praise.style.opacity = 1;
+                setTimeout(() => praise.style.opacity = 0, 1000);
             };
-            document.getElementById('game-area').appendChild(ghost);
-            setTimeout(() => { if(ghost) ghost.remove(); }, 1500);
+            area.appendChild(img);
+            setTimeout(() => { if(img.parentNode) img.remove(); }, 1500);
         }
 
-        document.getElementById('user-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
     </script>
 </body>
 </html>
