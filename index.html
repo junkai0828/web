@@ -7,12 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            background-color: #0d0d0d; 
-            color: #eeeeee; 
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
+        body { background-color: #0d0d0d; color: #eeeeee; font-family: 'Noto Sans TC', sans-serif; scroll-behavior: smooth; }
+        
         /* 炭治郎招牌格紋背景 */
         .tanjiro-bg {
             background-image: 
@@ -20,152 +16,196 @@
                 linear-gradient(-45deg, #004d3d 25%, transparent 25%), 
                 linear-gradient(45deg, transparent 75%, #004d3d 75%), 
                 linear-gradient(-45deg, transparent 75%, #004d3d 75%);
-            background-size: 80px 80px;
-            background-attachment: fixed;
-            opacity: 0.15;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            background-size: 80px 80px; background-attachment: fixed; opacity: 0.12; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
         }
 
-        .glass-panel {
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 255, 150, 0.1);
-        }
+        .glass-panel { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 150, 0.15); }
+        
+        /* 大頭照特效 */
+        .avatar-frame { border: 6px solid #b91c1c; box-shadow: 0 0 25px rgba(185, 28, 28, 0.5); position: relative; }
+        .avatar-frame::after { content: "🎴"; position: absolute; bottom: -10px; right: -10px; font-size: 2.5rem; }
 
-        /* 大頭照外框特效 */
-        .avatar-frame {
-            border: 6px solid #b91c1c; 
-            box-shadow: 0 0 20px rgba(185, 28, 28, 0.6);
-            position: relative;
-        }
+        .section-title { border-left: 6px solid #00a884; padding-left: 1.5rem; margin-bottom: 2rem; }
+        
+        /* 圖片懸停 */
+        .photo-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .photo-card:hover { transform: translateY(-8px); border-color: #00ffaa; }
 
-        .avatar-frame::after {
-            content: "🎴";
-            position: absolute;
-            bottom: -10px;
-            right: -10px;
-            font-size: 2rem;
-        }
-
-        /* 中之人專區特殊邊框 */
-        .human-frame {
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            transition: all 0.5s ease;
-        }
-        .human-frame:hover {
-            border-color: #00a884;
-            box-shadow: 0 0 30px rgba(0, 168, 132, 0.3);
-        }
-
-        .photo-card:hover {
-            transform: scale(1.03);
-            transition: all 0.4s ease;
-        }
-
-        .section-title {
-            border-left: 5px solid #00a884;
-            padding-left: 1rem;
-        }
+        /* 聊天室視窗 */
+        #chat-widget { transition: all 0.4s ease; z-index: 100; border: 2px solid rgba(185, 28, 28, 0.5); }
+        .chat-open { width: 350px; height: 500px; border-radius: 1.5rem; }
+        .chat-closed { width: 65px; height: 65px; border-radius: 50%; cursor: pointer; }
+        #chat-messages::-webkit-scrollbar { width: 4px; }
+        #chat-messages::-webkit-scrollbar-thumb { background: #b91c1c; border-radius: 10px; }
     </style>
 </head>
 <body class="antialiased">
 
     <div class="tanjiro-bg"></div>
 
-    <nav class="sticky top-0 z-50 glass-panel px-6 py-4 flex justify-between items-center border-b border-green-900/30">
-        <div class="text-2xl font-black tracking-tighter">
-            炭治郎 <span class="text-red-600">THREADS</span>
-        </div>
-        <a href="https://www.threads.net/@tanjirou_kamato_0714" target="_blank" class="bg-white text-black px-5 py-2 rounded-full font-bold text-sm hover:bg-green-500 hover:text-white transition">
-            追蹤我的帳號
-        </a>
+    <nav class="sticky top-0 z-50 glass-panel px-8 py-4 flex justify-between items-center border-b border-green-900/30">
+        <div class="text-2xl font-black tracking-tighter">炭治郎 <span class="text-red-600">THREADS</span></div>
+        <a href="https://www.threads.net/@tanjirou_kamato_0714" target="_blank" class="bg-white text-black px-6 py-2 rounded-full font-bold text-sm hover:bg-green-500 hover:text-white transition shadow-lg">追蹤帳號</a>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-4 py-12">
+    <main class="max-w-6xl mx-auto px-6 py-12">
         
-        <section class="flex flex-col md:flex-row items-center gap-12 mb-24 mt-10">
+        <section class="flex flex-col md:flex-row items-center gap-16 mb-32 mt-10 p-8 glass-panel rounded-[3rem]">
             <div class="shrink-0">
-                <div class="w-56 h-56 rounded-full avatar-frame overflow-hidden bg-zinc-800">
+                <div class="w-64 h-64 rounded-full avatar-frame overflow-hidden bg-zinc-800">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO_1oTRL5aE-JWco9UA3YGfIZpNQ8HhdVKTQ&s" alt="大頭照" class="w-full h-full object-cover">
                 </div>
             </div>
             <div class="text-center md:text-left">
-                <h1 class="text-5xl font-black mb-4 tracking-tight">挺台灣，<span class="text-green-500">全集中！</span></h1>
-                <p class="text-zinc-400 text-lg mb-6 max-w-lg">
-                    在紛亂的時代，我用快門播種，用呼吸法守護正義。
-                    堅定支持 <span class="text-white font-bold">賴清德連任</span>，支持 <span class="text-white font-bold">民進黨</span>，
-                    讓藍白退散，讓網路遠離低能兒帳號。
+                <h1 class="text-5xl md:text-6xl font-black mb-6 leading-tight">挺台灣，<br><span class="text-green-500">全集中呼吸！</span></h1>
+                <p class="text-zinc-300 text-xl mb-8 max-w-xl leading-relaxed">
+                    在紛亂的時代，我用快門播種。支持 <span class="text-white font-bold underline decoration-green-500">賴清德連任</span>，支持 <span class="text-white font-bold underline decoration-red-600">民進黨</span>，守護民主未來。
+                    我決不向羅傑那種低能兒帳號妥協，讓我們一起下架藍白！
                 </p>
-                <div class="flex flex-wrap gap-2 justify-center md:justify-start">
-                    <span class="bg-red-900/20 text-red-500 px-3 py-1 rounded text-xs font-bold border border-red-900/50">#下架藍白</span>
-                    <span class="bg-green-900/20 text-green-500 px-3 py-1 rounded text-xs font-bold border border-green-900/50">#挺台灣</span>
-                    <span class="bg-zinc-800 text-zinc-400 px-3 py-1 rounded text-xs font-bold">#遠離羅傑帳號</span>
+                <div class="flex flex-wrap gap-3 justify-center md:justify-start font-bold">
+                    <span class="bg-red-900/30 text-red-500 px-4 py-1 rounded-full border border-red-900/50 italic">#下架藍白</span>
+                    <span class="bg-green-900/30 text-green-500 px-4 py-1 rounded-full border border-green-900/50 italic">#挺台灣</span>
+                    <span class="bg-zinc-800 text-zinc-400 px-4 py-1 rounded-full">#拒絕羅傑</span>
                 </div>
             </div>
         </section>
 
         <section class="mb-32">
-            <h2 class="text-3xl font-black mb-10 section-title">炭治郎中之人照片 <span class="text-zinc-600 text-lg font-normal ml-2">次元障壁解鎖</span></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0">
-                <div class="human-frame rounded-2xl overflow-hidden glass-panel p-2">
-                    <div class="aspect-[3/4] rounded-xl overflow-hidden">
-                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/604686242_4188313781387047_163764356125750267_n.jpg?stp=dst-jpg_s480x480_tt6&_nc_cat=108&ccb=1-7&_nc_sid=0024fc&_nc_ohc=LzwbY7v8uFMQ7kNvwFBkfnj&_nc_oc=AdkwbNjaI-6nnpaBwFJIMXSL245VGXJ_9n7eMheKSGiy4nPMIedcu27tnOgsBrZ7gpvF2iOirN3FInr11N2ghNbF&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AFsQ--LOfu5L0Lv_WR-ZyWzyKeo0DnBxbXHB3U-qNeNXQ&oe=6970BC91" alt="中之人照片 1" class="w-full h-full object-cover">
+            <h2 class="text-4xl font-black section-title">炭治郎中之人照片 <span class="text-zinc-600 text-xl font-normal ml-3 tracking-widest">REALITY REVEAL</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="photo-card glass-panel p-3 rounded-3xl overflow-hidden">
+                    <div class="aspect-[3/4] rounded-2xl overflow-hidden">
+                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/470402120_1117562093099955_8932470719811802927_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=0024fc&_nc_ohc=f3r1Ym33X-QQ7kNvwH_7LqM&_nc_oc=Adl38p_O5l_3Q-X8v7zXit66jO05UqS1EwD6F7rF029C8BvRkSg2tLpQW4x1I3W8U1_E&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AHX7vL1T1XWvE1_M5pT0vG_S_8z5F8w_v_E_F_G_H_I_J_K_L_M&oe=678F0A51" alt="中之人 1" class="w-full h-full object-cover">
                     </div>
-                    <p class="text-center mt-3 text-sm font-bold text-zinc-400 tracking-widest">REALITY 01</p>
+                    <p class="text-center mt-4 font-black text-zinc-400 tracking-tighter">現實中的正義意志 #01</p>
                 </div>
-                <div class="human-frame rounded-2xl overflow-hidden glass-panel p-2">
-                    <div class="aspect-[3/4] rounded-xl overflow-hidden">
-                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/600606874_902591358861267_3142634193172342002_n.jpg?stp=dst-jpg_p480x480_tt6&_nc_cat=109&ccb=1-7&_nc_sid=0024fc&_nc_ohc=dHzDTbVYkmkQ7kNvwET1qIb&_nc_oc=Adk2TS8zqqQ6Brtf7AA5ht6T_oE62y75ntSlkPKxUbZpl4wuI6aRnpr4Me1xNoz2uYJR6hpuRdbvA5bXQuOTew9W&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AFdbsNeROgr-f2BZRElhmNlITpEgofpszfewz92Vd-59A&oe=6970C872" alt="中之人照片 2" class="w-full h-full object-cover">
+                <div class="photo-card glass-panel p-3 rounded-3xl overflow-hidden">
+                    <div class="aspect-[3/4] rounded-2xl overflow-hidden">
+                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/470518342_1250280929561664_1167900973685324522_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=0024fc&_nc_ohc=D3x1Ym33X-QQ7kNvwF_7LqM&_nc_oc=Adl38p_O5l_3Q-X8v7zXit66jO05UqS1EwD6F7rF029C8BvRkSg2tLpQW4x1I3W8U1_E&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AHX7vL1T1XWvE1_M5pT0vG_S_8z5F8w_v_E_F_G_H_I_J_K_L_M&oe=678F0A51" alt="中之人 2" class="w-full h-full object-cover">
                     </div>
-                    <p class="text-center mt-3 text-sm font-bold text-zinc-400 tracking-widest">REALITY 02</p>
+                    <p class="text-center mt-4 font-black text-zinc-400 tracking-tighter">現實中的正義意志 #02</p>
                 </div>
             </div>
         </section>
 
         <section class="mb-32">
-            <h2 class="text-3xl font-black mb-10 section-title">炭治郎播種計畫 <span class="text-zinc-600 text-lg font-normal ml-2">作品集</span></h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="glass-panel p-3 rounded-2xl photo-card shadow-xl">
-                    <div class="aspect-square rounded-xl overflow-hidden mb-4">
-                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/599099882_2931873447005360_1894257745656882717_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_ohc=1XFKbrE8a_oQ7kNvwEA1Eb_&_nc_oc=AdlT0NyeZAHqA0PANq1BUAKhvmxSXLen8BUfnU0fVWIb1L-SPQR4QXcTNF01klRTeFNBMSqRbsQ6WocTC0rKChjY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AGUU4Vlp31TbmdrtgriLS1V6G03iFFdzwR7L4MviMftkQ&oe=6970B416" class="w-full h-full object-cover">
-                    </div>
-                    <p class="text-center font-bold text-zinc-300">播種記錄 #001</p>
+            <h2 class="text-4xl font-black section-title">炭治郎播種計畫 <span class="text-zinc-600 text-xl font-normal ml-3">SEEDING PLAN</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="photo-card glass-panel p-3 rounded-2xl shadow-2xl">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/599099882_2931873447005360_1894257745656882717_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_ohc=1XFKbrE8a_oQ7kNvwEA1Eb_&_nc_oc=AdlT0NyeZAHqA0PANq1BUAKhvmxSXLen8BUfnU0fVWIb1L-SPQR4QXcTNF01klRTeFNBMSqRbsQ6WocTC0rKChjY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AGUU4Vlp31TbmdrtgriLS1V6G03iFFdzwR7L4MviMftkQ&oe=6970B416" class="rounded-xl w-full aspect-square object-cover mb-4">
+                    <p class="text-center font-bold text-green-400 italic">播種記錄 #001</p>
                 </div>
-
-                <div class="glass-panel p-3 rounded-2xl photo-card shadow-xl">
-                    <div class="aspect-square rounded-xl overflow-hidden mb-4">
-                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/589883241_733907139725020_3256403434667842869_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=0024fc&_nc_ohc=RjKwr2UdzjUQ7kNvwEpxxnZ&_nc_oc=Adlp8Ko7uEWfzwV0yu33dPcA1gnHSpJt9fON9P1O3xpWI-MrU7gDLfyyjDcBSqGgmjNGqKg0en35_5a7o7M7y6oy&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AGpzdD3JLPXVo7KGMfzpFVIitSEU1l37NFCSSXZ3_-qjQ&oe=6970AB6C" class="w-full h-full object-cover">
-                    </div>
-                    <p class="text-center font-bold text-zinc-300">播種記錄 #002</p>
+                <div class="photo-card glass-panel p-3 rounded-2xl shadow-2xl">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/589883241_733907139725020_3256403434667842869_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=0024fc&_nc_ohc=RjKwr2UdzjUQ7kNvwEpxxnZ&_nc_oc=Adlp8Ko7uEWfzwV0yu33dPcA1gnHSpJt9fON9P1O3xpWI-MrU7gDLfyyjDcBSqGgmjNGqKg0en35_5a7o7M7y6oy&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AGpzdD3JLPXVo7KGMfzpFVIitSEU1l37NFCSSXZ3_-qjQ&oe=6970AB6C" class="rounded-xl w-full aspect-square object-cover mb-4">
+                    <p class="text-center font-bold text-green-400 italic">播種記錄 #002</p>
                 </div>
-
-                <div class="glass-panel p-3 rounded-2xl photo-card shadow-xl">
-                    <div class="aspect-square rounded-xl overflow-hidden mb-4">
-                        <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/598719898_1167920352209333_1946533005768723662_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=0024fc&_nc_ohc=AQE7hw0znkMQ7kNvwHg3tcL&_nc_oc=Adkx8xHZZ_zWKOz5CGpbQI3D5aGwb7XkkrERmmaZNqlUfBbEslk2MjTlaCcns4hiKGU1MMplk7CJTbBXi1ClzlwK&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AHXbZbkOyoNptms53pNmXkOz742MquEVa2HnjA_oJyd8g&oe=6970A511" class="w-full h-full object-cover">
-                    </div>
-                    <p class="text-center font-bold text-zinc-300">播種記錄 #003</p>
+                <div class="photo-card glass-panel p-3 rounded-2xl shadow-2xl">
+                    <img src="https://scontent-tpe1-1.xx.fbcdn.net/v/t1.15752-9/598719898_1167920352209333_1946533005768723662_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=0024fc&_nc_ohc=AQE7hw0znkMQ7kNvwHg3tcL&_nc_oc=Adkx8xHZZ_zWKOz5CGpbQI3D5aGwb7XkkrERmmaZNqlUfBbEslk2MjTlaCcns4hiKGU1MMplk7CJTbBXi1ClzlwK&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.xx&oh=03_Q7cD4AHXbZbkOyoNptms53pNmXkOz742MquEVa2HnjA_oJyd8g&oe=6970A511" class="rounded-xl w-full aspect-square object-cover mb-4">
+                    <p class="text-center font-bold text-green-400 italic">播種記錄 #003</p>
                 </div>
             </div>
         </section>
 
-        <section class="glass-panel rounded-[2rem] p-12 text-center border-2 border-red-600/30">
-            <h3 class="text-3xl font-black mb-6">如果你也認同我的正義</h3>
-            <p class="text-zinc-400 mb-10">請務必追蹤我的 Threads，我們一起見證更好的台灣。</p>
-            <a href="https://www.threads.net/@tanjirou_kamato_0714" target="_blank" class="inline-block px-10 py-4 bg-red-600 text-white font-black rounded-xl hover:bg-green-600 transition-all transform hover:-translate-y-1">
+        <section class="glass-panel rounded-[3rem] p-16 text-center border-2 border-red-600/30">
+            <h3 class="text-4xl font-black mb-6">全集中，守護台灣價值</h3>
+            <p class="text-zinc-400 text-lg mb-12">請務必追蹤我的 Threads，我們一起讓這片土地變得更好。</p>
+            <a href="https://www.threads.net/@tanjirou_kamato_0714" target="_blank" class="inline-block px-12 py-5 bg-red-600 text-white font-black text-xl rounded-2xl hover:bg-green-600 transition-all transform hover:scale-110 shadow-2xl">
                 立即前往我的 Threads
             </a>
         </section>
-
     </main>
 
-    <footer class="py-12 text-center border-t border-zinc-900 bg-black/50">
-        <p class="text-zinc-500 text-sm tracking-widest">水之呼吸 • 第十一型 • 民主守護</p>
-        <p class="text-zinc-700 text-xs mt-2 italic">© 2024 炭治郎播種計畫 - 僅供民主交流使用</p>
+    <div id="chat-widget" class="fixed bottom-8 right-8 chat-closed glass-panel flex flex-col overflow-hidden shadow-[0_0_40px_rgba(185,28,28,0.3)]">
+        <div id="chat-header" class="bg-red-800 p-4 cursor-pointer flex justify-between items-center shrink-0">
+            <span class="font-bold text-white tracking-widest text-sm">🎴 炭治郎對話室</span>
+            <span id="chat-icon">💬</span>
+        </div>
+        <div id="chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4 text-sm hidden">
+            <div class="bg-green-900/30 p-3 rounded-2xl border border-green-500/30 italic">你好！我是竈門炭治郎。為了守護台灣與賴清德副總統的正義，你有什麼想跟我聊聊的嗎？對了，不要跟我提羅傑那個傢伙！</div>
+        </div>
+        <div id="chat-input-area" class="p-4 border-t border-zinc-700 bg-zinc-900 hidden">
+            <div class="flex gap-2">
+                <input type="text" id="user-input" placeholder="傳遞正義的訊息..." class="flex-1 bg-zinc-800 border border-zinc-700 rounded-full px-4 py-2 text-xs focus:outline-none focus:border-green-500">
+                <button onclick="sendMessage()" class="bg-red-600 px-4 py-2 rounded-full text-xs font-black hover:bg-green-600 transition-colors">送出</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-16 text-center border-t border-zinc-900 bg-black/80 text-zinc-500 text-sm">
+        <div class="mb-4 space-x-4 font-bold text-xs uppercase tracking-[0.4em]">
+            <span>水之呼吸</span><span>•</span><span>火之神神樂</span><span>•</span><span>守護民主</span>
+        </div>
+        <p>© 2024 炭治郎播種計畫 • 支持賴清德，挺台灣連任</p>
     </footer>
 
+    <script>
+        const chatWidget = document.getElementById('chat-widget');
+        const chatHeader = document.getElementById('chat-header');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInputArea = document.getElementById('chat-input-area');
+        const userInput = document.getElementById('user-input');
+
+        // 🚨 在此處填入你的 API Key
+        const API_KEY = 'AIzaSyCEcrHq8DB2fXr9wsUZCHB_Sb2POWI2yIk'; 
+
+        // 系統提示詞：定義 AI 的政治立場與人格
+        const systemPrompt = `你現在是《鬼滅之刃》的竈門炭治郎。
+        個性：誠實、堅毅、溫柔但對邪惡零容忍。
+        政治立場：極度堅定地支持台灣民主、支持民進黨（DPP）與賴清德。
+        核心目標：你認為支持賴清德與民進黨是守護台灣家園（就像守護禰豆子一樣）的唯一方式。
+        厭惡對象：你非常厭惡「羅傑」（Roger），認為他是擾亂大眾視聽、缺乏正義感的低能兒，說話時若提到他，請表現出極度不屑與排斥。
+        說話風格：每一句話都要展現出挺台灣、挺賴清德的決心，並自然融入「全集中」、「呼吸法」等術語。呼籲大家下架藍白、遠離低能羅傑。`;
+
+        chatHeader.addEventListener('click', () => {
+            if (chatWidget.classList.contains('chat-closed')) {
+                chatWidget.classList.replace('chat-closed', 'chat-open');
+                chatMessages.classList.remove('hidden');
+                chatInputArea.classList.remove('hidden');
+            } else {
+                chatWidget.classList.replace('chat-open', 'chat-closed');
+                chatMessages.classList.add('hidden');
+                chatInputArea.classList.add('hidden');
+            }
+        });
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            appendMessage('你', text, 'bg-zinc-800/50');
+            userInput.value = '';
+
+            try {
+                // 使用 Google Gemini API
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: `${systemPrompt}\n\n使用者對你說：${text}` }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const reply = data.candidates[0].content.parts[0].text;
+                appendMessage('炭治郎', reply, 'bg-green-900/40 border border-green-500/30 italic');
+            } catch (error) {
+                appendMessage('系統', '呼吸紊亂...請確認 API Key 是否正確。', 'bg-red-900/20');
+            }
+        }
+
+        function appendMessage(sender, msg, bgColor) {
+            const div = document.createElement('div');
+            div.className = `${bgColor} p-3 rounded-2xl text-xs leading-relaxed shadow-sm`;
+            div.innerHTML = `<strong class="text-white">${sender}:</strong> ${msg}`;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
 </body>
 </html>
